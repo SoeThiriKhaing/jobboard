@@ -10,14 +10,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class EmpHomePage extends StatefulWidget {
-  const EmpHomePage({super.key});
+class JobPostForm extends StatefulWidget {
+  const JobPostForm({super.key});
 
   @override
-  EmpHomePageState createState() => EmpHomePageState();
+  JobPostFormState createState() => JobPostFormState();
 }
 
-class EmpHomePageState extends State<EmpHomePage> {
+class JobPostFormState extends State<JobPostForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _companyController = TextEditingController();

@@ -1,5 +1,6 @@
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/employer/homepage.dart';
+import 'package:codehunt/employer/home.dart';
+import 'package:codehunt/employer/jobpostform.dart';
 import 'package:codehunt/employer/managepost.dart';
 import 'package:codehunt/employer/profile.dart';
 import 'package:codehunt/form_decoration/appbarstyle.dart';
@@ -16,7 +17,8 @@ class EmployerPageState extends State<EmployerPage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[
-    EmpHomePage(),
+    EmployerHomePage(),
+    JobPostForm(),
     ManagePostsPage(),
     ProfilePage(),
   ];
@@ -41,9 +43,10 @@ class EmployerPageState extends State<EmployerPage> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.post_add),
+            label: 'Post Job',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.manage_search),
@@ -55,7 +58,10 @@ class EmployerPageState extends State<EmployerPage> {
           ),
         ],
         currentIndex: _selectedIndex,
+        unselectedItemColor: Colors.grey,
         selectedItemColor: RegistrationForm.navyColor,
+        type: BottomNavigationBarType.fixed,
+        elevation: 20,
         onTap: _onItemTapped,
       ),
     );
