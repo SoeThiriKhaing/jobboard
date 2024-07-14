@@ -3,6 +3,7 @@ import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/appbarstyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 class JobApplicationForm extends StatefulWidget {
   final String jobPostId;
@@ -24,13 +25,25 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _coverLetterController = TextEditingController();
+  PlatformFile? _resumeFile;
+
+  Future<void> _pickResume() async {
+    final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom, allowedExtensions: ['pdf', 'doc', 'docx']);
+
+    if (result != null && result.files.isNotEmpty) {
+      setState(() {
+        _resumeFile = result.files.first;
+      });
+    }
+  }
 
   Future<void> _submitApplication() async {
     if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        await FirebaseFirestore.instance.collection('job_applications').add({
+        final applicationData = {
           'jobPostId': widget.jobPostId,
           'applicantId': user.uid,
           'name': _nameController.text,
@@ -38,7 +51,17 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           'phone': _phoneController.text,
           'coverLetter': _coverLetterController.text,
           'applicationDate': Timestamp.now(),
-        });
+        };
+
+        if (_resumeFile != null) {
+          // You would upload the file to Firebase Storage and save the download URL in the applicationData
+          // For this example, we are just adding the file name
+          applicationData['resumeFileName'] = _resumeFile!.name;
+        }
+
+        await FirebaseFirestore.instance
+            .collection('job_applications')
+            .add(applicationData);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Application submitted successfully!')),
@@ -110,6 +133,17 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                   return null;
                 },
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickResume,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: RegistrationForm.navyColor,
+                ),
+                child: const Text('Upload Resume'),
+              ),
+              const SizedBox(height: 20),
+              if (_resumeFile != null)
+                Text('Selected file: ${_resumeFile!.name}'),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitApplication,

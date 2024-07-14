@@ -4,6 +4,7 @@ import 'package:codehunt/employer/emp_home.dart';
 import 'package:codehunt/form_decoration/appbarstyle.dart';
 import 'package:codehunt/form_decoration/boxdecoration.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
+import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:codehunt/utils/validation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,7 +39,7 @@ class LoginFormState extends State<LoginForm> {
         if (role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SeekerHome()),
+            MaterialPageRoute(builder: (context) => const SeekerMainpage()),
           );
         } else {
           Navigator.pushReplacement(

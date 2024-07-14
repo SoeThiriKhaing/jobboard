@@ -1,4 +1,6 @@
 import 'package:codehunt/auth/login.dart';
+import 'package:codehunt/auth/splash_screen.dart';
+import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:codehunt/auth/register.dart';
@@ -21,9 +23,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const RegistrationForm(),
+      home: const SplashScreen(),
       routes: {
-        '/login':(contex)=>const LoginForm(),
+        '/seekerhome': (contex) => const SeekerHome(),
       },
     );
   }
