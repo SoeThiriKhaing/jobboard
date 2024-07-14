@@ -44,18 +44,17 @@ class RegistrationFormState extends State<RegistrationForm> {
         if (_role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => JobseekerPage()),
+            MaterialPageRoute(builder: (context) => const SeekerHome()),
           );
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => EmployerPage()),
+            MaterialPageRoute(builder: (context) => const EmployerPage()),
           );
         }
         _clear();
       } on FirebaseAuthException catch (e) {
         print('Error: $e');
-        // Handle errors as needed
       }
     }
   }

@@ -3,7 +3,6 @@ import 'package:codehunt/employer/home.dart';
 import 'package:codehunt/employer/jobpostform.dart';
 import 'package:codehunt/employer/managepost.dart';
 import 'package:codehunt/employer/profile.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
 import 'package:flutter/material.dart';
 
 class EmployerPage extends StatefulWidget {
@@ -20,7 +19,7 @@ class EmployerPageState extends State<EmployerPage> {
     EmployerHomePage(),
     JobPostForm(),
     ManagePostsPage(),
-    ProfilePage(),
+    EmployerProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -32,14 +31,7 @@ class EmployerPageState extends State<EmployerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Find The Best Tech',
-          style: appBarTextStyle,
-        ),
-        backgroundColor: RegistrationForm.navyColor,
-      ),
+     
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

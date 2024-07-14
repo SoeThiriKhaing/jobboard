@@ -1,3 +1,4 @@
+import 'package:codehunt/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:codehunt/auth/register.dart';
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const RegistrationForm(),
+      routes: {
+        '/login':(contex)=>const LoginForm(),
+      },
     );
   }
 }

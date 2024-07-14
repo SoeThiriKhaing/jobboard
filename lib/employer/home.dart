@@ -1,4 +1,6 @@
+import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/employer/managepost.dart';
+import 'package:codehunt/form_decoration/appbarstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,6 +10,14 @@ class EmployerHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Find The Best Tech',
+          style: appBarTextStyle,
+        ),
+        backgroundColor: RegistrationForm.navyColor,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

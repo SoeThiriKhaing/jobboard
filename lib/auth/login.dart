@@ -38,12 +38,12 @@ class LoginFormState extends State<LoginForm> {
         if (role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => JobseekerPage()),
+            MaterialPageRoute(builder: (context) => const SeekerHome()),
           );
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => EmployerPage()),
+            MaterialPageRoute(builder: (context) => const EmployerPage()),
           );
         }
         _clear();

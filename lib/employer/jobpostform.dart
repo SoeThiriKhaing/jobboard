@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/appbarstyle.dart';
-// import 'package:codehunt/form_decoration/boxdecoration.dart';
 import 'package:codehunt/utils/validation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -61,7 +61,9 @@ class JobPostFormState extends State<JobPostForm> {
         });
         _clear();
       } catch (e) {
-        print('Error: $e');
+        if (kDebugMode) {
+          print('Error: $e');
+        }
       }
     }
   }
@@ -108,9 +110,9 @@ class JobPostFormState extends State<JobPostForm> {
   }
 
   Future<void> _selectCompanyLogo() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _companyLogo = File(pickedFile.path);
@@ -120,125 +122,140 @@ class JobPostFormState extends State<JobPostForm> {
 
   @override
   Widget build(BuildContext context) {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _titleController,
-              decoration: _inputDecoration.copyWith(labelText: "Job Title"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _companyController,
-              decoration: _inputDecoration.copyWith(labelText: "Company Name"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _salaryRangeController,
-              decoration: _inputDecoration.copyWith(labelText: "Salary Range"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _descriptionController,
-              decoration:
-                  _inputDecoration.copyWith(labelText: "Job Description"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _locationController,
-              decoration: _inputDecoration.copyWith(labelText: "Job Location"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _experienceController,
-              decoration:
-                  _inputDecoration.copyWith(labelText: "Experience Level"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _skillsController,
-              decoration:
-                  _inputDecoration.copyWith(labelText: "Required Skills"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _jobTypeController,
-              decoration: _inputDecoration.copyWith(labelText: "Job Type"),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _postingDateController,
-              decoration: _inputDecoration.copyWith(
-                labelText: "Posting Date",
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () => _selectDate(context, _postingDateController),
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Find The Best Tech',
+          style: appBarTextStyle,
+        ),
+        backgroundColor: RegistrationForm.navyColor,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _titleController,
+                decoration: _inputDecoration.copyWith(labelText: "Job Title"),
+                validator: validateTextField,
               ),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            TextFormField(
-              controller: _endingDateController,
-              decoration: _inputDecoration.copyWith(
-                labelText: "Ending Date",
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () => _selectDate(context, _endingDateController),
-                ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _companyController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Company Name"),
+                validator: validateTextField,
               ),
-              validator: validateTextField,
-            ),
-            const SizedBox(height: 12.0),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration:
-                        _inputDecoration.copyWith(labelText: "Company Logo"),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: _companyLogo != null
-                          ? _companyLogo!.path.split('/').last
-                          : '',
-                    ),
-                    validator: validateTextField,
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _salaryRangeController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Salary Range"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _descriptionController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Job Description"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _locationController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Job Location"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _experienceController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Experience Level"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _skillsController,
+                decoration:
+                    _inputDecoration.copyWith(labelText: "Required Skills"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _jobTypeController,
+                decoration: _inputDecoration.copyWith(labelText: "Job Type"),
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _postingDateController,
+                decoration: _inputDecoration.copyWith(
+                  labelText: "Posting Date",
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () =>
+                        _selectDate(context, _postingDateController),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.upload_file),
-                  onPressed: _selectCompanyLogo,
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _endingDateController,
+                decoration: _inputDecoration.copyWith(
+                  labelText: "Ending Date",
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () =>
+                        _selectDate(context, _endingDateController),
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 24.0),
-            Container(
-              width: _screenWidth,
-              child: ElevatedButton(
-                onPressed: _postJob,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: RegistrationForm.navyColor,
-                ),
-                child: Text(
-                  'Post Now',
-                  style: btnTextStyle,
+                validator: validateTextField,
+              ),
+              const SizedBox(height: 12.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration:
+                          _inputDecoration.copyWith(labelText: "Company Logo"),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: _companyLogo != null
+                            ? _companyLogo!.path.split('/').last
+                            : '',
+                      ),
+                      validator: validateTextField,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.upload_file),
+                    onPressed: _selectCompanyLogo,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24.0),
+              SizedBox(
+                width: screenWidth,
+                child: ElevatedButton(
+                  onPressed: _postJob,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: RegistrationForm.navyColor,
+                  ),
+                  child: Text(
+                    'Post Now',
+                    style: btnTextStyle,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
