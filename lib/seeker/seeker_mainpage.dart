@@ -18,7 +18,7 @@ class SeekerMainpageState extends State<SeekerMainpage> {
     const SeekerHome(),
     const SavedJobsPage(),
     const AppliedJobsPage(),
-    const ProfilePage(),
+    const SeekerProfile(),
   ];
 
   void _onItemTapped(int index) {
@@ -30,6 +30,14 @@ class SeekerMainpageState extends State<SeekerMainpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   backgroundColor: RegistrationForm.navyColor,
+      //   automaticallyImplyLeading: false,
+      //   title: Text(
+      //     "Find Your Dream IT Job Today",
+      //     style: appBarTextStyle,
+      //   ),
+      // ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

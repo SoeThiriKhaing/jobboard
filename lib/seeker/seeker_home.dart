@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/seeker/jobapplication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +38,8 @@ class SeekerHomeState extends State<SeekerHome> {
 
   @override
   Widget build(BuildContext context) {
+    bool isSaved = false;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -51,17 +53,40 @@ class SeekerHomeState extends State<SeekerHome> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: const InputDecoration(
-                labelText: 'Search for jobs',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+            child: Container(
+              width: screenWidth,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5), // changes position of shadow
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value.toLowerCase();
-                });
-              },
+              child: TextField(
+                decoration: InputDecoration(
+                    hintText: 'Search here',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 20),
+                    suffixIcon: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.search,
+                      ),
+                      color: RegistrationForm.navyColor,
+                    )),
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
+                },
+              ),
             ),
           ),
           Expanded(
@@ -89,6 +114,8 @@ class SeekerHomeState extends State<SeekerHome> {
                   children: filteredDocs.map((doc) {
                     return Card(
                       color: Colors.white,
+                      margin:const
+                          EdgeInsets.symmetric(vertical: 6.0, horizontal: 14.0),
                       child: ListTile(
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,13 +131,13 @@ class SeekerHomeState extends State<SeekerHome> {
                               ),
                             const SizedBox(height: 20),
                             Text(
-                              'Company Name:${doc['company']}',
+                              '${doc['title']}',
                               style: titleTextStyle,
                             ),
                             const SizedBox(
                               height: 20,
                             ),
-                            Text('JobTitle: ${doc['title']}',
+                            Text('Company Name: ${doc['company']}',
                                 style: postTextStyle),
                             const SizedBox(height: 14),
                             Text('SalaryRange: ${doc['salaryRange']}',
@@ -167,17 +194,25 @@ class SeekerHomeState extends State<SeekerHome> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: RegistrationForm.navyColor,
                                   ),
-                                  child: const Text('Apply'),
+                                  child: Text(
+                                    'Apply',
+                                    style: btnTextStyle,
+                                  ),
                                 ),
                                 const SizedBox(width: 10),
-                                ElevatedButton(
+                                IconButton(
                                   onPressed: () {
                                     _saveJob(doc.id);
+                                    setState(() {
+                                      isSaved = !isSaved;
+                                    });
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey,
+                                  icon: Icon(
+                                    isSaved
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    color: isSaved ? Colors.pink : Colors.grey,
                                   ),
-                                  child: const Text('Save'),
                                 ),
                               ],
                             ),

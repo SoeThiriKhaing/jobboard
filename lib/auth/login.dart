@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/employer/emp_home.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/employer/emp_mainpage.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/form_decoration/boxdecoration.dart';
-import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:codehunt/utils/validation.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +43,10 @@ class LoginFormState extends State<LoginForm> {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const EmployerPage()),
+            MaterialPageRoute(
+                builder: (context) => const EmployerPage(
+                      employerEmail: 'employer',
+                    )),
           );
         }
         _clear();
@@ -161,7 +163,7 @@ class LoginFormState extends State<LoginForm> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Login',
+          'Sign in',
           style: appBarTextStyle,
         ),
         backgroundColor: RegistrationForm.navyColor,
@@ -237,7 +239,7 @@ class LoginFormState extends State<LoginForm> {
                       backgroundColor: RegistrationForm.navyColor,
                     ),
                     child: Text(
-                      'Login',
+                      'Sign in',
                       style: btnTextStyle,
                     ),
                   ),
@@ -253,7 +255,7 @@ class LoginFormState extends State<LoginForm> {
                     },
                     child: RichText(
                       text: const TextSpan(
-                        text: 'Do not have account? ',
+                        text: 'Do not have an account? ',
                         style: TextStyle(color: Colors.black),
                         children: <TextSpan>[
                           TextSpan(

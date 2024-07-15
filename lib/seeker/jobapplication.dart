@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -80,6 +80,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Apply for ${widget.jobPostData['title']}',
           style: appBarTextStyle,
@@ -139,7 +140,10 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: RegistrationForm.navyColor,
                 ),
-                child: const Text('Upload Resume'),
+                child: Text(
+                  'Upload Resume',
+                  style: btnTextStyle,
+                ),
               ),
               const SizedBox(height: 20),
               if (_resumeFile != null)
@@ -150,7 +154,10 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: RegistrationForm.navyColor,
                 ),
-                child: const Text('Submit Application'),
+                child: Text(
+                  'Submit Application',
+                  style: btnTextStyle,
+                ),
               ),
             ],
           ),

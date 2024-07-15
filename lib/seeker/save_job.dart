@@ -1,26 +1,69 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/seeker/jobapplication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SavedJobsPage extends StatelessWidget {
+class SavedJobsPage extends StatefulWidget {
   const SavedJobsPage({super.key});
 
   @override
+  State<SavedJobsPage> createState() => _SavedJobsPageState();
+}
+
+class _SavedJobsPageState extends State<SavedJobsPage> {
+  @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return Center(
-        child: Text('Please log in to see your saved jobs.'),
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Saved Jobs",
+            style: appBarTextStyle,
+          ),
+          backgroundColor: RegistrationForm.navyColor,
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Center(
+              child: Text("Please log in to see your saved jobs"),
+            ),
+            const SizedBox(
+              height: 30.0,
+            ),
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              width: screenWidth,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginForm()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: RegistrationForm.navyColor,
+                ),
+                child: Text(
+                  'Sign in',
+                  style: btnTextStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Saved Jobs', style: appBarTextStyle),
         backgroundColor: RegistrationForm.navyColor,
       ),
@@ -34,7 +77,8 @@ class SavedJobsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          var savedJobs = snapshot.data!.docs.map((doc) => doc['jobPostId']).toList();
+          var savedJobs =
+              snapshot.data!.docs.map((doc) => doc['jobPostId']).toList();
 
           return StreamBuilder(
             stream: FirebaseFirestore.instance
@@ -50,6 +94,8 @@ class SavedJobsPage extends StatelessWidget {
                 children: snapshot.data!.docs.map((doc) {
                   return Card(
                     color: Colors.white,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 6.0, horizontal: 14.0),
                     child: ListTile(
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,13 +111,13 @@ class SavedJobsPage extends StatelessWidget {
                             ),
                           const SizedBox(height: 20),
                           Text(
-                            'Company Name:${doc['company']}',
+                            '${doc['title']}',
                             style: titleTextStyle,
                           ),
                           const SizedBox(
                             height: 20,
                           ),
-                          Text('JobTitle: ${doc['title']}',
+                          Text('Company Name: ${doc['company']}',
                               style: postTextStyle),
                           const SizedBox(height: 14),
                           Text('SalaryRange: ${doc['salaryRange']}',
@@ -122,9 +168,28 @@ class SavedJobsPage extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: RegistrationForm.navyColor,
                             ),
-                            child: const Text('Apply'),
+                            child: Text(
+                              'Apply',
+                              style: btnTextStyle,
+                            ),
                           ),
+                          
                         ],
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.bookmark_remove),
+                        onPressed: () {
+                          FirebaseFirestore.instance
+                              .collection('saved_jobs')
+                              .where('userId', isEqualTo: user.uid)
+                              .where('jobPostId', isEqualTo: doc.id)
+                              .get()
+                              .then((snapshot) {
+                            for (var doc in snapshot.docs) {
+                              doc.reference.delete();
+                            }
+                          });
+                        },
                       ),
                       contentPadding: const EdgeInsets.all(16),
                     ),

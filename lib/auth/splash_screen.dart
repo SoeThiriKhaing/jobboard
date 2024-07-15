@@ -1,5 +1,7 @@
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/seeker/seeker_home.dart';
+import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,7 +22,7 @@ class SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 3), () {});
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginForm()),
+      MaterialPageRoute(builder: (context) => const SeekerMainpage()),
     );
   }
 
@@ -33,7 +35,9 @@ class SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('assets/images/a.jpg', width: 100, height: 100),
+            ClipOval(
+              child: Image.asset('assets/images/a.jpg', width: 80, height: 60),
+            ),
             const SizedBox(height: 20),
             const Text(
               'Code Hunt',

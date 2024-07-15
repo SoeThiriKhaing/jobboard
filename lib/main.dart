@@ -1,10 +1,7 @@
-import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/splash_screen.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:codehunt/auth/register.dart';
-// import 'package:codehunt/auth/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

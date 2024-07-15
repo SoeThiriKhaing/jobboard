@@ -1,11 +1,11 @@
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/employer/editjobpost.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ManagePostsPage extends StatelessWidget {
-  const ManagePostsPage({Key? key});
+  const ManagePostsPage({Key? key, required String employerEmail});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +29,8 @@ class ManagePostsPage extends StatelessWidget {
             children: snapshot.data!.docs.map((doc) {
               return Card(
                 color: Colors.white,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 6.0, horizontal: 14.0),
                 child: ListTile(
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,13 +46,14 @@ class ManagePostsPage extends StatelessWidget {
                         ),
                       const SizedBox(height: 20),
                       Text(
-                        'Company Name:${doc['company']}',
+                        '${doc['title']}',
                         style: titleTextStyle,
                       ),
                       const SizedBox(
                         height: 20,
                       ),
-                      Text('JobTitle: ${doc['title']}', style: postTextStyle),
+                      Text('Company Name: ${doc['company']}',
+                          style: postTextStyle),
                       const SizedBox(height: 14),
                       Text('SalaryRange: ${doc['salaryRange']}',
                           style: postTextStyle),
@@ -122,3 +125,95 @@ class ManagePostsPage extends StatelessWidget {
     );
   }
 }
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+
+// class ManagePostsPage extends StatefulWidget {
+//   final String employerEmail;
+
+//   const ManagePostsPage({super.key, required this.employerEmail});
+
+//   @override
+//   ManagePostsPageState createState() => ManagePostsPageState();
+// }
+
+// class ManagePostsPageState extends State<ManagePostsPage> {
+//   late Stream<QuerySnapshot> _jobPostsStream;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _jobPostsStream = FirebaseFirestore.instance
+//         .collection('job_posts')
+//         .where('postedBy', isEqualTo: widget.employerEmail)
+//         .snapshots();
+//   }
+
+//   Future<void> _deleteJobPost(String jobId) async {
+//     await FirebaseFirestore.instance
+//         .collection('job_posts')
+//         .doc(jobId)
+//         .delete();
+//   }
+
+//   Future<void> _editJobPost(String jobId) async {
+//     // Implement job post editing functionality here
+//     // Redirect to job post form with existing data pre-filled
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Manage Job Posts'),
+//       ),
+//       body: StreamBuilder<QuerySnapshot>(
+//         stream: _jobPostsStream,
+//         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+//           if (snapshot.hasError) {
+//             return const Text('Something went wrong');
+//           }
+
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const CircularProgressIndicator();
+//           }
+
+//           return ListView(
+//             children: snapshot.data!.docs.map((DocumentSnapshot document) {
+//               Map<String, dynamic> data =
+//                   document.data()! as Map<String, dynamic>;
+//               return Card(
+//                 child: ListTile(
+//                   title: Text(data['title'] ?? ''),
+//                   subtitle: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(data['company'] ?? ''),
+//                       Text(data['location'] ?? ''),
+//                       Text(
+//                           'Posted on: ${DateFormat.yMMMd().format((data['postingDate'] as Timestamp).toDate())}'),
+//                     ],
+//                   ),
+//                   trailing: Row(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       IconButton(
+//                         icon: const Icon(Icons.edit),
+//                         onPressed: () => _editJobPost(document.id),
+//                       ),
+//                       IconButton(
+//                         icon: const Icon(Icons.delete),
+//                         onPressed: () => _deleteJobPost(document.id),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             }).toList(),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

@@ -1,61 +1,304 @@
+// import 'package:codehunt/auth/register.dart';
+// import 'package:codehunt/employer/managepost.dart';
+// import 'package:codehunt/form_decoration/appbarstyle.dart';
+// import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
+// class EmployerHomePage extends StatelessWidget {
+//   const EmployerHomePage({super.key, required String employerEmail});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         automaticallyImplyLeading: false,
+//         title: Text(
+//           'Find The Best Tech',
+//           style: appBarTextStyle,
+//         ),
+//         backgroundColor: RegistrationForm.navyColor,
+//       ),
+//       body: SingleChildScrollView(
+//         child: Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               FutureBuilder<int>(
+//                 future: _fetchTotalJobPosts(),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+//                   if (snapshot.hasError) {
+//                     return Center(child: Text('Error: ${snapshot.error}'));
+//                   }
+//                   final totalJobPosts = snapshot.data ?? 0;
+//                   return Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const Text(
+//                         'Welcome back!', // Replace with actual employer name logic if dynamic
+//                         style: TextStyle(
+//                             fontSize: 24, fontWeight: FontWeight.bold),
+//                       ),
+//                       const SizedBox(height: 40),
+//                       Card(
+//                         color: Colors.yellow,
+//                         elevation: 3,
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(16.0),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const Center(
+//                                 child: Text(
+//                                   'Job Postings',
+//                                   style: TextStyle(
+//                                       fontSize: 18,
+//                                       fontWeight: FontWeight.bold,
+//                                       color: Colors.black),
+//                                 ),
+//                               ),
+//                               const SizedBox(height: 25),
+//                               Center(
+//                                   child: Text(
+//                                       'Total job postings: $totalJobPosts')),
+//                               const SizedBox(
+//                                 height: 20,
+//                               ),
+//                               // Add job posting details or navigation to manage job posts
+//                               Center(
+//                                 child: ElevatedButton(
+//                                   onPressed: () {
+//                                     Navigator.push(
+//                                       context,
+//                                       MaterialPageRoute(
+//                                         builder: (context) =>
+//                                             const ManagePostsPage(),
+//                                       ),
+//                                     );
+//                                   },
+//                                   child: const Text('Manage Job Posts'),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 40),
+//                       Card(
+//                         color: Colors.green,
+//                         elevation: 3,
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(16.0),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const Center(
+//                                 child: Text(
+//                                   'Job Postings',
+//                                   style: TextStyle(
+//                                       fontSize: 18,
+//                                       fontWeight: FontWeight.bold,
+//                                       color: Colors.black),
+//                                 ),
+//                               ),
+//                               const SizedBox(height: 25),
+//                               Center(
+//                                   child: Text(
+//                                       'Total job postings: $totalJobPosts')),
+//                               const SizedBox(
+//                                 height: 20,
+//                               ),
+//                               // Add job posting details or navigation to manage job posts
+//                               Center(
+//                                 child: ElevatedButton(
+//                                   onPressed: () {
+//                                     Navigator.push(
+//                                       context,
+//                                       MaterialPageRoute(
+//                                         builder: (context) =>
+//                                             const ManagePostsPage(),
+//                                       ),
+//                                     );
+//                                   },
+//                                   child: const Text('Manage Job Posts'),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 40),
+//                       Card(
+//                         color: Colors.red,
+//                         elevation: 3,
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(16.0),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const Center(
+//                                 child: Text(
+//                                   'Job Postings',
+//                                   style: TextStyle(
+//                                       fontSize: 18,
+//                                       fontWeight: FontWeight.bold,
+//                                       color: Colors.black),
+//                                 ),
+//                               ),
+//                               const SizedBox(height: 25),
+//                               Center(
+//                                   child: Text(
+//                                       'Total job postings: $totalJobPosts')),
+//                               const SizedBox(
+//                                 height: 20,
+//                               ),
+//                               // Add job posting details or navigation to manage job posts
+//                               Center(
+//                                 child: ElevatedButton(
+//                                   onPressed: () {
+//                                     Navigator.push(
+//                                       context,
+//                                       MaterialPageRoute(
+//                                         builder: (context) =>
+//                                             const ManagePostsPage(),
+//                                       ),
+//                                     );
+//                                   },
+//                                   child: const Text('Manage Job Posts'),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Future<int> _fetchTotalJobPosts() async {
+//     final querySnapshot =
+//         await FirebaseFirestore.instance.collection('job_posts').get();
+//     return querySnapshot.size;
+//   }
+// }
+
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/employer/home.dart';
-import 'package:codehunt/employer/jobpostform.dart';
 import 'package:codehunt/employer/managepost.dart';
-import 'package:codehunt/employer/profile.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class EmployerPage extends StatefulWidget {
-  const EmployerPage({super.key});
+class EmployerHomePage extends StatelessWidget {
+  final String employerEmail;
 
-  @override
-  EmployerPageState createState() => EmployerPageState();
-}
-
-class EmployerPageState extends State<EmployerPage> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _pages = <Widget>[
-    EmployerHomePage(),
-    JobPostForm(),
-    ManagePostsPage(),
-    EmployerProfilePage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  const EmployerHomePage({super.key, required this.employerEmail});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.post_add),
-            label: 'Post Job',
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Find The Best Tech',
+          style: appBarTextStyle,
+        ),
+        backgroundColor: RegistrationForm.navyColor,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FutureBuilder<int>(
+                future: _fetchTotalJobPosts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  final totalJobPosts = snapshot.data ?? 0;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Welcome back!', // Replace with actual employer name logic if dynamic
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 40),
+                      Card(
+                        color: Colors.yellow,
+                        elevation: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Center(
+                                child: Text(
+                                  'Job Postings',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              Center(
+                                  child: Text(
+                                      'Total job postings: $totalJobPosts')),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              // Add job posting details or navigation to manage job posts
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ManagePostsPage(employerEmail: employerEmail),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Manage Job Posts'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Other cards can be added here similarly
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.manage_search),
-            label: 'Manage Job Posts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: RegistrationForm.navyColor,
-        type: BottomNavigationBarType.fixed,
-        elevation: 20,
-        onTap: _onItemTapped,
+        ),
       ),
     );
+  }
+
+  Future<int> _fetchTotalJobPosts() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('job_posts')
+        .where('postedBy', isEqualTo: employerEmail)
+        .get();
+    return querySnapshot.size;
   }
 }

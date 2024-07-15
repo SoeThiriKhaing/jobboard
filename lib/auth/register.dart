@@ -1,6 +1,6 @@
 import 'package:codehunt/auth/login.dart';
-import 'package:codehunt/employer/emp_home.dart';
-import 'package:codehunt/form_decoration/appbarstyle.dart';
+import 'package:codehunt/employer/emp_mainpage.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,7 +49,10 @@ class RegistrationFormState extends State<RegistrationForm> {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const EmployerPage()),
+            MaterialPageRoute(
+                builder: (context) => const EmployerPage(
+                      employerEmail: 'employer',
+                    )),
           );
         }
         _clear();
@@ -193,7 +196,7 @@ class RegistrationFormState extends State<RegistrationForm> {
                         style: TextStyle(color: Colors.black),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Login',
+                            text: 'Sign in',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

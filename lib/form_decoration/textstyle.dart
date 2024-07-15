@@ -19,3 +19,5 @@ TextStyle titleTextStyle =
     const TextStyle(fontWeight: FontWeight.bold, color: Colors.black);
 
 TextStyle postTextStyle = const TextStyle(color: Colors.black);
+
+
