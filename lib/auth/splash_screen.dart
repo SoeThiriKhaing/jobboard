@@ -1,6 +1,4 @@
-import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 

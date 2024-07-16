@@ -2,6 +2,7 @@ import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/employer/emp_mainpage.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
+import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,8 +19,10 @@ class RegistrationForm extends StatefulWidget {
 
 class RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   String _role = 'Jobseeker';
   bool _agreedToPolicy = false;
 
@@ -44,7 +47,7 @@ class RegistrationFormState extends State<RegistrationForm> {
         if (_role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SeekerHome()),
+            MaterialPageRoute(builder: (context) => const SeekerMainpage()),
           );
         } else {
           Navigator.pushReplacement(
@@ -114,6 +117,14 @@ class RegistrationFormState extends State<RegistrationForm> {
                 const SizedBox(
                   height: 16.0,
                 ),
+                // TextFormField(
+                //   controller: nameController,
+                //   decoration: nameInputDecoration(),
+                //   validator: validateTextField,
+                // ),
+                // const SizedBox(
+                //   height: 20,
+                // ),
                 TextFormField(
                   controller: _emailController,
                   decoration: emailInputDecoration(),

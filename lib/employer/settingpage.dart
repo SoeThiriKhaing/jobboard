@@ -77,13 +77,13 @@ class SettingsPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const LoginForm()),
                   (Route<dynamic> route) => false,
                 );
-                // Implement sign-out logic
+              
               }),
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text('Notifications'),
             onTap: () {
-              // Navigate to notifications settings
+             
             },
           ),
           ListTile(
@@ -93,6 +93,11 @@ class SettingsPage extends StatelessWidget {
               // Navigate to language settings
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delet account"),
+
+          )
         ],
       ),
     );

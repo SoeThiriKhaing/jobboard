@@ -1,3 +1,4 @@
+import 'package:codehunt/auth/register.dart';
 import 'package:flutter/material.dart';
 
 Color navyColor = const Color(0xFF000080);
@@ -20,4 +21,7 @@ TextStyle titleTextStyle =
 
 TextStyle postTextStyle = const TextStyle(color: Colors.black);
 
-
+TextStyle dashTextStyle =
+    const TextStyle(color: RegistrationForm.navyColor, fontSize: 12);
+TextStyle dashTitleStyle = const TextStyle(
+    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18);

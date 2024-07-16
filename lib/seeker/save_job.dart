@@ -80,124 +80,145 @@ class _SavedJobsPageState extends State<SavedJobsPage> {
           var savedJobs =
               snapshot.data!.docs.map((doc) => doc['jobPostId']).toList();
 
-          return StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('job_posts')
-                .where(FieldPath.documentId, whereIn: savedJobs)
-                .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          return savedJobs.isEmpty
+              ? const Center(
+                  child: Text("No Job Post found"),
+                )
+              : StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('job_posts')
+                      .where(FieldPath.documentId, whereIn: savedJobs)
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                        child: Text("No job post found"),
+                      );
+                    }
 
-              return ListView(
-                children: snapshot.data!.docs.map((doc) {
-                  return Card(
-                    color: Colors.white,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 6.0, horizontal: 14.0),
-                    child: ListTile(
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (doc['companyLogo'] != null)
-                            ClipOval(
-                              child: Image.network(
-                                doc['companyLogo'],
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          const SizedBox(height: 20),
-                          Text(
-                            '${doc['title']}',
-                            style: titleTextStyle,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text('Company Name: ${doc['company']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('SalaryRange: ${doc['salaryRange']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Job Description: ${doc['description']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Job Location: ${doc['location']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Experience Level: ${doc['experienceLevel']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Required Skills: ${doc['requiredSkills']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Job Type: ${doc['jobType']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Posting Date: ${doc['postingDate']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          Text('Ending Date: ${doc['endingDate']}',
-                              style: postTextStyle),
-                          const SizedBox(height: 14),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (FirebaseAuth.instance.currentUser == null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginForm()),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => JobApplicationForm(
-                                      jobPostId: doc.id,
-                                      jobPostData:
-                                          doc.data() as Map<String, dynamic>,
+                    return ListView(
+                      children: snapshot.data!.docs.map((doc) {
+                        return Card(
+                          color: Colors.white,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 6.0, horizontal: 14.0),
+                          child: ListTile(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (doc['companyLogo'] != null)
+                                  ClipOval(
+                                    child: Image.network(
+                                      doc['companyLogo'],
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: RegistrationForm.navyColor,
-                            ),
-                            child: Text(
-                              'Apply',
-                              style: btnTextStyle,
+                                const SizedBox(height: 20),
+                                Text(
+                                  '${doc['title']}',
+                                  style: titleTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Text('Company Name: ${doc['company']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('SalaryRange: ${doc['salaryRange']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('Job Description: ${doc['description']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('Job Location: ${doc['location']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text(
+                                    'Experience Level: ${doc['experienceLevel']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text(
+                                    'Required Skills: ${doc['requiredSkills']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('Job Type: ${doc['jobType']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('Posting Date: ${doc['postingDate']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Text('Ending Date: ${doc['endingDate']}',
+                                    style: postTextStyle),
+                                const SizedBox(height: 14),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  // crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (FirebaseAuth.instance.currentUser ==
+                                            null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginForm()),
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  JobApplicationForm(
+                                                jobPostId: doc.id,
+                                                jobPostData: doc.data()
+                                                    as Map<String, dynamic>,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            RegistrationForm.navyColor,
+                                      ),
+                                      child: Text(
+                                        'Apply',
+                                        style: btnTextStyle,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.bookmark_remove),
+                                      onPressed: () {
+                                        FirebaseFirestore.instance
+                                            .collection('saved_jobs')
+                                            .where('userId',
+                                                isEqualTo: user.uid)
+                                            .where('jobPostId',
+                                                isEqualTo: doc.id)
+                                            .get()
+                                            .then((snapshot) {
+                                          for (var doc in snapshot.docs) {
+                                            doc.reference.delete();
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.bookmark_remove),
-                        onPressed: () {
-                          FirebaseFirestore.instance
-                              .collection('saved_jobs')
-                              .where('userId', isEqualTo: user.uid)
-                              .where('jobPostId', isEqualTo: doc.id)
-                              .get()
-                              .then((snapshot) {
-                            for (var doc in snapshot.docs) {
-                              doc.reference.delete();
-                            }
-                          });
-                        },
-                      ),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
-          );
+                        );
+                      }).toList(),
+                    );
+                  },
+                );
         },
       ),
     );

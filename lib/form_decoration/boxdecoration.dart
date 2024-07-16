@@ -13,6 +13,18 @@ InputDecoration emailInputDecoration() {
   );
 }
 
+// InputDecoration nameInputDecoration() {
+//   return const InputDecoration(
+//     labelText: 'Name',
+//     hintText: 'Enter your name',
+//     border: OutlineInputBorder(
+//       borderSide: BorderSide(color: Colors.black),
+//     ),
+//     focusedBorder: OutlineInputBorder(
+//         borderSide: BorderSide(color: RegistrationForm.navyColor)),
+//   );
+// }
+
 InputDecoration passwordInputDecoration() {
   return const InputDecoration(
     labelText: 'Password',
@@ -27,11 +39,10 @@ InputDecoration passwordInputDecoration() {
 
 InputDecoration getInputDecoration() {
   return const InputDecoration(
-       border: OutlineInputBorder(
+    border: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.black),
     ),
     focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: RegistrationForm.navyColor)),
-
   );
 }
