@@ -1,7 +1,6 @@
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/employer/emp_mainpage.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,7 +46,10 @@ class RegistrationFormState extends State<RegistrationForm> {
         if (_role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SeekerMainpage()),
+            MaterialPageRoute(
+                builder: (context) => const SeekerMainpage(
+                      seekerEmail: 'Jobseeker',
+                    )),
           );
         } else {
           Navigator.pushReplacement(
@@ -95,7 +97,7 @@ class RegistrationFormState extends State<RegistrationForm> {
                     children: [
                       ClipOval(
                         child: Image.asset(
-                          'assets/images/coder.jpg', // Replace with your image asset path
+                          'assets/images/coder.jpg',
                           height: 100,
                           width: 100,
                           fit: BoxFit.cover,
@@ -117,14 +119,6 @@ class RegistrationFormState extends State<RegistrationForm> {
                 const SizedBox(
                   height: 16.0,
                 ),
-                // TextFormField(
-                //   controller: nameController,
-                //   decoration: nameInputDecoration(),
-                //   validator: validateTextField,
-                // ),
-                // const SizedBox(
-                //   height: 20,
-                // ),
                 TextFormField(
                   controller: _emailController,
                   decoration: emailInputDecoration(),

@@ -1,3 +1,5 @@
+import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,7 +12,12 @@ class CompanyProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Company Profile'),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: RegistrationForm.navyColor,
+        title: Text(
+          'Company Profile',
+          style: appBarTextStyle,
+        ),
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance

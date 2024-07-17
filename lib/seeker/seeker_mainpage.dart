@@ -6,7 +6,7 @@ import 'package:codehunt/seeker/seeker_profile.dart';
 import 'package:flutter/material.dart';
 
 class SeekerMainpage extends StatefulWidget {
-  const SeekerMainpage({super.key});
+  const SeekerMainpage({super.key, required String seekerEmail});
 
   @override
   SeekerMainpageState createState() => SeekerMainpageState();
@@ -15,7 +15,9 @@ class SeekerMainpage extends StatefulWidget {
 class SeekerMainpageState extends State<SeekerMainpage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    const SeekerHome(),
+    const SeekerHome(
+      seekerEmail: 'Jobseeker',
+    ),
     const SavedJobsPage(),
     const AppliedJobsPage(),
     const SeekerProfile(),

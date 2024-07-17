@@ -1,3 +1,5 @@
+import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,7 +12,12 @@ class ManagementToolsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Management Tools'),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: RegistrationForm.navyColor,
+        title: Text(
+          'Management Tools',
+          style: appBarTextStyle,
+        ),
       ),
       body: SingleChildScrollView(
         child: StreamBuilder<QuerySnapshot>(

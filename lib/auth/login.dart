@@ -38,7 +38,9 @@ class LoginFormState extends State<LoginForm> {
         if (role == 'Jobseeker') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SeekerMainpage()),
+            MaterialPageRoute(
+                builder: (context) =>
+                    const SeekerMainpage(seekerEmail: 'Jobseeker')),
           );
         } else {
           Navigator.pushReplacement(

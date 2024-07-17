@@ -1,5 +1,7 @@
 import 'package:codehunt/auth/splash_screen.dart';
+import 'package:codehunt/employer/emp_home.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
+import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -22,7 +24,11 @@ class MyApp extends StatelessWidget {
       ),
       home: const SplashScreen(),
       routes: {
-        '/seekerhome': (contex) => const SeekerHome(),
+        '/seekerhome': (context) => const SeekerHome(
+              seekerEmail: 'JobSeeker',
+            ),
+        'employerhome': (context) =>
+            const EmployerHomePage(employerEmail: 'employer'),
       },
     );
   }

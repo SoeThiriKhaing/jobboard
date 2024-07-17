@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SeekerHome extends StatefulWidget {
-  const SeekerHome({super.key});
+  const SeekerHome({super.key, required String seekerEmail});
 
   @override
   SeekerHomeState createState() => SeekerHomeState();
@@ -185,7 +185,7 @@ class SeekerHomeState extends State<SeekerHome> {
                                               JobApplicationForm(
                                             jobPostId: doc.id,
                                             jobPostData: doc.data()
-                                                as Map<String, dynamic>,
+                                                as Map<String, dynamic>, seekerEmail: '',
                                           ),
                                         ),
                                       );

@@ -177,7 +177,7 @@ class _SavedJobsPageState extends State<SavedJobsPage> {
                                                   JobApplicationForm(
                                                 jobPostId: doc.id,
                                                 jobPostData: doc.data()
-                                                    as Map<String, dynamic>,
+                                                    as Map<String, dynamic>, seekerEmail: '',
                                               ),
                                             ),
                                           );

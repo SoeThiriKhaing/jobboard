@@ -382,7 +382,7 @@ class SeekerProfileState extends State<SeekerProfile> {
   Future<void> _updateProfileData() async {
     if (_user == null) return;
 
-    await _firestore.collection('users').doc(_user!.uid).update({
+    await _firestore.collection('seeker').doc(_user!.uid).update({
       'profileImageUrl': _profileImageUrl,
       'location': _location,
       'resume': _resume,
@@ -525,7 +525,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Name: ${_user!.displayName}'),
+              Text('Name: ${_user!.displayName ?? 'Seeker'}'),
               const SizedBox(height: 8),
               Text('Email: ${_user!.email ?? 'N/A'}'),
               const SizedBox(height: 16),
@@ -601,9 +601,11 @@ class SeekerProfileState extends State<SeekerProfile> {
                 },
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _updateProfileData,
-                child: const Text('Save Profile'),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _updateProfileData,
+                  child: const Text('Save Profile'),
+                ),
               ),
             ],
           ),

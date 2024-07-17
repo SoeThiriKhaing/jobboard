@@ -8,10 +8,11 @@ import 'package:intl/intl.dart';
 
 class EditJobPostPage extends StatefulWidget {
   final String jobPostId;
+  final String employerEmail;
   final Map<String, dynamic> jobPostData;
 
   const EditJobPostPage(
-      {super.key, required this.jobPostId, required this.jobPostData});
+      {super.key, required this.jobPostId, required this.jobPostData,required this.employerEmail});
 
   @override
   EditJobPostPageState createState() => EditJobPostPageState();
