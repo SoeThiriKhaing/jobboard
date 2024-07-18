@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/auth/sharepreference.dart';
 import 'package:codehunt/employer/emp_mainpage.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/form_decoration/boxdecoration.dart';
@@ -33,7 +34,9 @@ class LoginFormState extends State<LoginForm> {
             .collection('users')
             .doc(userCredential.user!.uid)
             .get();
-        String role = userDoc['role'];
+        var role = userDoc['role'];
+
+        SharePreferenceService.saveUserRole(role);
 
         if (role == 'Jobseeker') {
           Navigator.pushReplacement(
@@ -42,7 +45,7 @@ class LoginFormState extends State<LoginForm> {
                 builder: (context) =>
                     const SeekerMainpage(seekerEmail: 'Jobseeker')),
           );
-        } else {
+        } else if (role == 'Employer') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -50,6 +53,9 @@ class LoginFormState extends State<LoginForm> {
                       employerEmail: 'employer',
                     )),
           );
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const LoginForm()));
         }
         _clear();
       } on FirebaseAuthException catch (e) {

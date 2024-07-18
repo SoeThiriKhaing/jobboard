@@ -1,3 +1,4 @@
+import 'package:codehunt/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharePreferenceService {
@@ -14,8 +15,9 @@ class SharePreferenceService {
     return userRole;
   }
 
-  static Future<void> removeUserRole() async {
+  static Future<LoginForm> removeUserRole() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove(userRoleKey);
+    return const LoginForm();
   }
 }

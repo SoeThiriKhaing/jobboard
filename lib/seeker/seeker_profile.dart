@@ -382,7 +382,7 @@ class SeekerProfileState extends State<SeekerProfile> {
   Future<void> _updateProfileData() async {
     if (_user == null) return;
 
-    await _firestore.collection('seeker').doc(_user!.uid).update({
+    await _firestore.collection('users').doc(_user!.uid).update({
       'profileImageUrl': _profileImageUrl,
       'location': _location,
       'resume': _resume,
@@ -398,9 +398,7 @@ class SeekerProfileState extends State<SeekerProfile> {
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
-      // Here you can upload the image file to your storage and get the URL
-      // For example, using Firebase Storage, and then update _profileImageUrl
-      // For simplicity, we are just setting the path to _profileImageUrl
+
       if (mounted) {
         setState(() {
           _profileImageUrl = imageFile.path;
@@ -414,8 +412,7 @@ class SeekerProfileState extends State<SeekerProfile> {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
       File file = File(result.files.single.path!);
-      // Here you can upload the file to your storage and get the URL
-      // For simplicity, we are just setting the path to the controller's text
+
       if (mounted) {
         setState(() {
           controller.text = file.path;

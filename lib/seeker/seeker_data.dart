@@ -1,41 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Employer {
+class Jobseeker {
   final String id;
   final String profileImage;
-  final String companyEmail;
+
   final String phoneNumber;
   final String location;
-  final String jobDescription;
 
-  Employer({
+
+  Jobseeker(
+   {
     required this.id,
     required this.profileImage,
-    required this.companyEmail,
     required this.phoneNumber,
     required this.location,
-    required this.jobDescription,
+
   });
 
-  factory Employer.fromDocument(DocumentSnapshot doc) {
+  factory Jobseeker.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return Employer(
+    return Jobseeker(
       id: doc.id,
       profileImage: data['profileImage'] ?? '',
-      companyEmail: data['companyEmail'] ?? '',
+ 
       phoneNumber: data['phoneNumber'] ?? '',
       location: data['location'] ?? '',
-      jobDescription: data['jobDescription'] ?? '',
+   
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'profileImage': profileImage,
-      'companyEmail': companyEmail,
       'phoneNumber': phoneNumber,
       'location': location,
-      'jobDescription': jobDescription,
+
     };
   }
 }

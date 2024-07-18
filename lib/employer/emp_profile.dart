@@ -1,36 +1,32 @@
-import 'dart:io';
+import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/employer/settingpage.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class EmployerProfile extends StatefulWidget {
-  const EmployerProfile({super.key, required this.employerEmail});
-
   final String employerEmail;
 
+  const EmployerProfile({Key? key, required this.employerEmail})
+      : super(key: key);
+
   @override
-  EmployerProfileState createState() => EmployerProfileState();
+  _EmployerProfileState createState() => _EmployerProfileState();
 }
 
-class EmployerProfileState extends State<EmployerProfile> {
+class _EmployerProfileState extends State<EmployerProfile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
   String? _profileImageUrl;
-  String _companyName = '';
-  String _phoneNumber = '';
   String _location = '';
 
-  final TextEditingController _companyNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-
-  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -43,26 +39,17 @@ class EmployerProfileState extends State<EmployerProfile> {
 
   Future<void> _loadProfileData() async {
     if (_user == null) return;
-
-    try {
-      DocumentSnapshot snapshot =
-          await _firestore.collection('employersprofile').doc(_user!.uid).get();
-      if (snapshot.exists) {
-        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(_user!.uid).get();
+    if (snapshot.exists) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (mounted) {
         setState(() {
-          _profileImageUrl = data['profileImageUrl'] ?? '';
-          _companyName = data['companyName'] ?? '';
-          _phoneNumber = data['phoneNumber'] ?? '';
+          _profileImageUrl = data['profileImageUrl'];
           _location = data['location'] ?? '';
 
-          _companyNameController.text = _companyName;
-          _phoneNumberController.text = _phoneNumber;
           _locationController.text = _location;
         });
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error loading profile data: $e');
       }
     }
   }
@@ -70,75 +57,114 @@ class EmployerProfileState extends State<EmployerProfile> {
   Future<void> _updateProfileData() async {
     if (_user == null) return;
 
-    try {
-      await _firestore.collection('employersprofile').doc(_user!.uid).update({
-        'profileImageUrl': _profileImageUrl,
-        'companyName': _companyName,
-        'phoneNumber': _phoneNumber,
-        'location': _location,
-      });
-      if (kDebugMode) {
-        print('Profile updated successfully');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error updating profile: $e');
+    await _firestore.collection('users').doc(_user!.uid).update({
+      'profileImageUrl': _profileImageUrl,
+      'location': _location,
+    });
+  }
+
+  Future<void> _pickProfileImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+
+      if (mounted) {
+        setState(() {
+          _profileImageUrl = imageFile.path;
+        });
+        _updateProfileData();
       }
     }
   }
 
-  Future<void> _pickProfileImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  Future<void> _pickFile(TextEditingController controller) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      File file = File(result.files.single.path!);
 
-    if (pickedFile != null) {
-      File imageFile = File(pickedFile.path);
-      setState(() {
-        _profileImageUrl = imageFile.path;
-      });
-      _updateProfileData();
-    } else {
-      if (kDebugMode) {
-        print('No image selected.');
+      if (mounted) {
+        setState(() {
+          controller.text = file.path;
+        });
+        _updateProfileData();
       }
     }
   }
 
   @override
   void dispose() {
-    _companyNameController.dispose();
-    _phoneNumberController.dispose();
     _locationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (_user == null) {
-    //   return const Center(
-    //     child: Text('Please log in to see your profile.'),
-    //   );
-    // }
+    double screenWidth = MediaQuery.of(context).size.width;
 
+    if (_user == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Profile",
+            style: appBarTextStyle,
+          ),
+          backgroundColor: RegistrationForm.navyColor,
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Center(
+              child: Text("Please log in to see your profile"),
+            ),
+            const SizedBox(
+              height: 30.0,
+            ),
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              width: screenWidth,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginForm()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: RegistrationForm.navyColor,
+                ),
+                child: Text(
+                  'Sign in',
+                  style: btnTextStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: RegistrationForm.navyColor,
         title: Text(
           'Profile',
           style: appBarTextStyle,
         ),
-        backgroundColor: RegistrationForm.navyColor,
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        SettingsPage(employerEmail: widget.employerEmail)),
-              );
-            },
-            icon: const Icon(Icons.settings, color: Colors.white),
-          ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SettingsPage(
+                              employerEmail: widget.employerEmail,
+                            )));
+              },
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Padding(
@@ -157,42 +183,16 @@ class EmployerProfileState extends State<EmployerProfile> {
                         : const AssetImage('assets/default_profile_image.png')
                             as ImageProvider,
                     child: _profileImageUrl == null
-                        ? const Icon(Icons.add_a_photo, size: 50)
+                        ? const Icon(Icons.add_a_photo)
                         : null,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Name: ${_user?.displayName ?? 'Employer'}',
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Email: ${_user!.email}',
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _companyNameController,
-                decoration: const InputDecoration(labelText: 'Company Name'),
-                onChanged: (value) {
-                  setState(() {
-                    _companyName = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _phoneNumberController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
-                onChanged: (value) {
-                  setState(() {
-                    _phoneNumber = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              Text('Name: ${_user!.displayName ?? 'Employer'}'),
+              const SizedBox(height: 8),
+              Text('Email: ${_user!.email ?? 'N/A'}'),
+              const SizedBox(height: 16),
               TextField(
                 controller: _locationController,
                 decoration: const InputDecoration(labelText: 'Location'),
@@ -202,10 +202,12 @@ class EmployerProfileState extends State<EmployerProfile> {
                   });
                 },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _updateProfileData,
-                child: const Text('Save Profile'),
+              const SizedBox(height: 16),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _updateProfileData,
+                  child: const Text('Save Profile'),
+                ),
               ),
             ],
           ),
