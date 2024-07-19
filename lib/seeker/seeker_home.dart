@@ -69,8 +69,9 @@ class SeekerHomeState extends State<SeekerHome> {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                    hintText: 'Search here',
-                    hintStyle: const TextStyle(color: Colors.grey),
+                    hintText: 'Search here by Job title or Company name',
+                    hintStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 15),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 20),
@@ -187,7 +188,6 @@ class SeekerHomeState extends State<SeekerHome> {
                                             jobPostData: doc.data()
                                                 as Map<String, dynamic>,
                                             seekerEmail: '',
-                                         
                                           ),
                                         ),
                                       );

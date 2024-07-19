@@ -43,6 +43,35 @@ class StatisticsPageState extends State<StatisticsPage> {
         .delete();
   }
 
+  Future<void> _showRejectConfirmationDialog(String documentId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Rejection'),
+          content:
+              const Text('Are you sure you want to reject this application?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                await _rejectApplication(documentId);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -85,85 +114,83 @@ class StatisticsPageState extends State<StatisticsPage> {
                   jobApplications[index].data() as Map<String, dynamic>;
               var documentId = jobApplications[index].id;
 
-              return Expanded(
-                child: Card(
-                  color: Colors.white,
-                  elevation: 10,
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 14.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (application['profileImageUrl'] != null)
-                          ClipOval(
-                            child: SizedBox(
-                              width: 100,
-                              height: 100,
-                              child: Image.network(
-                                application['profileImageUrl'],
-                                fit: BoxFit
-                                    .cover, // This ensures the image covers the oval shape
-                              ),
+              return Card(
+                color: Colors.white,
+                elevation: 10,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (application['profileImageUrl'] != null)
+                        ClipOval(
+                          child: SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: Image.network(
+                              application['profileImageUrl'],
+                              fit: BoxFit.cover,
                             ),
                           ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Applicant Name: ${application['name']}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
                         ),
-                        const SizedBox(height: 20),
-                        Text('Email: ${application['email']}'),
-                        const SizedBox(height: 20),
-                        Text('Location: ${application['location']}'),
-                        const SizedBox(height: 20),
-                        Text('Education: ${application['education']}'),
-                        const SizedBox(height: 20),
-                        Text('Skills: ${application['skills']}'),
-                        const SizedBox(height: 20),
-                        Text('Languages: ${application['language']}'),
-                        const SizedBox(height: 20),
-                        Text('Cover Letter: ${application['coverLetter']}'),
-                        const SizedBox(height: 20),
-                        if (application['resumeUrl'] != null)
+                      const SizedBox(height: 20),
+                      Text(
+                        'Applicant Name: ${application['name']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text('Email: ${application['email']}'),
+                      const SizedBox(height: 20),
+                      Text('Location: ${application['location']}'),
+                      const SizedBox(height: 20),
+                      Text('Education: ${application['education']}'),
+                      const SizedBox(height: 20),
+                      Text('Skills: ${application['skills']}'),
+                      const SizedBox(height: 20),
+                      Text('Languages: ${application['language']}'),
+                      const SizedBox(height: 20),
+                      Text('Cover Letter: ${application['coverLetter']}'),
+                      const SizedBox(height: 20),
+                      if (application['resumeUrl'] != null)
+                        ElevatedButton(
+                          onPressed: () async {
+                            final url = application['resumeUrl'];
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              throw 'Could not launch $url';
+                            }
+                          },
+                          child: const Text('View Resume'),
+                        ),
+                      const SizedBox(height: 20),
+                      Text(
+                          'Application Date: ${application['applicationDate'].toDate()}'),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
                           ElevatedButton(
-                            onPressed: () async {
-                              final url = application['resumeUrl'];
-                              if (await canLaunch(url)) {
-                                await launch(url);
-                              } else {
-                                throw 'Could not launch $url';
-                              }
-                            },
-                            child: const Text('View Resume'),
+                            onPressed: () => _acceptApplication(application),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green),
+                            child: const Text('Accept'),
                           ),
-                        const SizedBox(height: 20),
-                        Text(
-                            'Application Date: ${application['applicationDate'].toDate()}'),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => _acceptApplication(application),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green),
-                              child: const Text('Accept'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => _rejectApplication(documentId),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red),
-                              child: const Text('Reject'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ElevatedButton(
+                            onPressed: () =>
+                                _showRejectConfirmationDialog(documentId),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red),
+                            child: const Text('Reject'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               );

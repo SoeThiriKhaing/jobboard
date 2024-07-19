@@ -77,7 +77,7 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('job_posts')
-            .where('jobPostId', isEqualTo: user.uid)
+            .where('jobPostId', isEqualTo:user.uid)
             .where('postedBy', isEqualTo: widget.employerEmail)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -193,10 +193,7 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    FirebaseFirestore.instance
-                                        .collection('job_posts')
-                                        .doc(doc.id)
-                                        .delete();
+                                    _showDeleteConfirmationDialog(doc.id);
                                   },
                                 ),
                               ],
@@ -210,6 +207,37 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
                 );
         },
       ),
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(String jobPostId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this job post?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection('job_posts')
+                    .doc(jobPostId)
+                    .delete();
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

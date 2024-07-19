@@ -55,26 +55,15 @@ class EmployerHomePageState extends State<EmployerHomePage> {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20.0,
-                      mainAxisSpacing: 10.0,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16.0,
+                      mainAxisSpacing: 16.0,
                       childAspectRatio: 3 / 4,
                     ),
                     itemCount: 3,
                     itemBuilder: (context, index) {
-                      if (index == 2) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: _buildCard(index, context, totalJobPosts),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return _buildCard(index, context, totalJobPosts);
-                      }
+                      return _buildCard(index, context, totalJobPosts);
                     },
                   );
                 },
@@ -107,40 +96,68 @@ class EmployerHomePageState extends State<EmployerHomePage> {
 
   Widget _buildJobPostCard(BuildContext context, int totalJobPosts) {
     return Card(
-      color: Colors.yellow,
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Job Postings',
-              style: dashTitleStyle,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      elevation: 5,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ManagePostsPage(employerEmail: widget.employerEmail),
             ),
-            const SizedBox(height: 10),
-            Center(child: Text('Total job postings: $totalJobPosts')),
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ManagePostsPage(employerEmail: widget.employerEmail),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.yellow.shade700, Colors.yellow.shade400],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Job Postings',
+                style: dashTitleStyle.copyWith(color: Colors.black87),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                  child: Text('Total job postings: $totalJobPosts',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold))),
+              const SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ManagePostsPage(
+                            employerEmail: widget.employerEmail),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'View Jobs',
+                      style: dashTextStyle.copyWith(color: Colors.white),
                     ),
-                  );
-                },
-                child: Center(
-                  child: Text(
-                    'View Jobs',
-                    style: dashTextStyle,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -148,38 +165,65 @@ class EmployerHomePageState extends State<EmployerHomePage> {
 
   Widget _buildCompanyProfileCard(BuildContext context) {
     return Card(
-      color: Colors.lightBlueAccent,
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Company Profile',
-              style: dashTitleStyle,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      elevation: 5,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  CompanyProfilePage(employerEmail: widget.employerEmail),
             ),
-            const SizedBox(height: 25),
-            const Center(child: Text('Edit and view your company profile')),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CompanyProfilePage(
-                          employerEmail: widget.employerEmail),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Edit Profile',
-                  style: dashTextStyle,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade700, Colors.blue.shade400],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Company Profile',
+                style: dashTitleStyle.copyWith(color: Colors.white),
+              ),
+              const SizedBox(height: 25),
+              const Center(
+                  child: Text('Edit and view your company profile',
+                      style: TextStyle(color: Colors.white))),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CompanyProfilePage(
+                            employerEmail: widget.employerEmail),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white,
+                  ),
+                  child: Text(
+                    'Edit Profile',
+                    style: dashTextStyle.copyWith(color: Colors.black),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -187,38 +231,65 @@ class EmployerHomePageState extends State<EmployerHomePage> {
 
   Widget _buildStatisticsCard(BuildContext context) {
     return Card(
-      color: Colors.green,
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Statistics',
-              style: dashTitleStyle,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      elevation: 5,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  StatisticsPage(employerEmail: widget.employerEmail),
             ),
-            const SizedBox(height: 44),
-            const Center(child: Text('View application and hiring statistics')),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          StatisticsPage(employerEmail: widget.employerEmail),
-                    ),
-                  );
-                },
-                child: Text(
-                  'View Status',
-                  style: dashTextStyle,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green.shade700, Colors.green.shade400],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Statistics',
+                style: dashTitleStyle.copyWith(color: Colors.white),
+              ),
+              const SizedBox(height: 44),
+              const Center(
+                  child: Text('View application and hiring statistics',
+                      style: TextStyle(color: Colors.white))),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            StatisticsPage(employerEmail: widget.employerEmail),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white,
+                  ),
+                  child: Text(
+                    'View Status',
+                    style: dashTextStyle.copyWith(color: Colors.black),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

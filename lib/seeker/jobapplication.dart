@@ -33,10 +33,12 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   final TextEditingController _educationController = TextEditingController();
   final TextEditingController _skillController = TextEditingController();
   final TextEditingController _languagesController = TextEditingController();
-  final TextEditingController _coverLetterController = TextEditingController();
+
   PlatformFile? _resumeFile;
+  PlatformFile? _coverLetterFile;
   XFile? _profileImage;
   String? _profileImageUrl;
+  String? _coverLetter;
   String? _resumeUrl;
   bool _alreadyApplied = false;
 
@@ -92,6 +94,19 @@ class JobApplicationFormState extends State<JobApplicationForm> {
     }
   }
 
+  Future<void> _pickCoverLetter() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'pptx'],
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      setState(() {
+        _coverLetterFile = result.files.first;
+      });
+    }
+  }
+
   Future<void> _pickResume() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -132,19 +147,27 @@ class JobApplicationFormState extends State<JobApplicationForm> {
         _resumeUrl = downloadUrl;
       } else if (field == 'profile_images') {
         _profileImageUrl = downloadUrl;
+      } else if (field == 'coverletter') {
+        _coverLetter = downloadUrl;
       }
     });
   }
 
   Future<void> _submitApplication(String jobPostId) async {
-    if (_formKey.currentState!.validate() && !_alreadyApplied) {
+    if (_formKey.currentState!.validate() &&
+        _resumeFile != null &&
+        _coverLetterFile != null &&
+        !_alreadyApplied) {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         if (_resumeFile != null) {
           await _uploadFile(_resumeFile!.path!, _resumeFile!.name, 'resumes');
         }
-
+        if (_coverLetterFile != null) {
+          await _uploadFile(
+              _coverLetterFile!.path!, _coverLetterFile!.name, 'coverletter');
+        }
         if (_profileImage != null) {
           await _uploadFile(
               _profileImage!.path, _profileImage!.name, 'profile_images');
@@ -159,7 +182,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           'education': _educationController.text,
           'skill': _skillController.text,
           'language': _languagesController.text,
-          'coverLetter': _coverLetterController.text,
+          'coverLetter': _coverLetter,
           'applicationDate': Timestamp.now(),
           'profileImageUrl': _profileImageUrl,
           'resumeUrl': _resumeUrl,
@@ -183,6 +206,11 @@ class JobApplicationFormState extends State<JobApplicationForm> {
     } else if (_alreadyApplied) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('You have already applied for this job.')),
+      );
+    } else if (_resumeFile == null || _coverLetterFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please upload both cover letter and resume.')),
       );
     }
   }
@@ -267,6 +295,12 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                       labelText: "Location",
                       border: OutlineInputBorder(),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your location';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -275,6 +309,12 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                       labelText: "Education",
                       border: OutlineInputBorder(),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your education';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -283,6 +323,12 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                       labelText: "Skills",
                       border: OutlineInputBorder(),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your skills';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -291,21 +337,27 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                       labelText: "Languages",
                       border: OutlineInputBorder(),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _coverLetterController,
-                    decoration: const InputDecoration(
-                      labelText: 'Cover Letter',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 5,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a cover letter';
+                        return 'Please enter your languages';
                       }
                       return null;
                     },
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: _screenWidth,
+                    child: ElevatedButton.icon(
+                      onPressed: _pickCoverLetter,
+                      icon: const Icon(Icons.upload_file),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      label: Text(
+                        'Upload CoverLetter',
+                        style: dashTextStyle,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Container(
