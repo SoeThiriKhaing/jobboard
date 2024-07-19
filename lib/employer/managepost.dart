@@ -77,7 +77,8 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('job_posts')
-            // .where('email', isEqualTo: widget.employerEmail)
+            .where('jobPostId', isEqualTo: user.uid)
+            .where('postedBy', isEqualTo: widget.employerEmail)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {

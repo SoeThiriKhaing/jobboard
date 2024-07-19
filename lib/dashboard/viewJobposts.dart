@@ -1,5 +1,6 @@
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,6 +11,7 @@ class Viewjobposts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: RegistrationForm.navyColor,
@@ -22,6 +24,7 @@ class Viewjobposts extends StatelessWidget {
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('job_posts')
+              .where('jobPostId', isEqualTo: user?.uid)
               .where('postedBy', isEqualTo: employerEmail)
               .snapshots(),
           builder: (context, snapshot) {

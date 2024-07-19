@@ -114,8 +114,8 @@ class SeekerHomeState extends State<SeekerHome> {
                   children: filteredDocs.map((doc) {
                     return Card(
                       color: Colors.white,
-                      margin:const
-                          EdgeInsets.symmetric(vertical: 6.0, horizontal: 14.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 6.0, horizontal: 14.0),
                       child: ListTile(
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +185,9 @@ class SeekerHomeState extends State<SeekerHome> {
                                               JobApplicationForm(
                                             jobPostId: doc.id,
                                             jobPostData: doc.data()
-                                                as Map<String, dynamic>, seekerEmail: '',
+                                                as Map<String, dynamic>,
+                                            seekerEmail: '',
+                                         
                                           ),
                                         ),
                                       );
