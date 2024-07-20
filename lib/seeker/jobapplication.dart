@@ -225,7 +225,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
 
   @override
   Widget build(BuildContext context) {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -236,9 +236,10 @@ class JobApplicationFormState extends State<JobApplicationForm> {
         backgroundColor: RegistrationForm.navyColor,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(3.0),
         child: Card(
-          elevation: 10,
+          color: Colors.white,
+          elevation: 3,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -346,7 +347,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    width: _screenWidth,
+                    width: screenWidth,
                     child: ElevatedButton.icon(
                       onPressed: _pickCoverLetter,
                       icon: const Icon(Icons.upload_file),
@@ -361,7 +362,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    width: _screenWidth,
+                    width: screenWidth,
                     child: ElevatedButton.icon(
                       onPressed: _pickResume,
                       icon: const Icon(Icons.upload_file),
@@ -391,7 +392,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                     ),
                   const SizedBox(height: 12),
                   Container(
-                    width: _screenWidth,
+                    width: screenWidth,
                     child: ElevatedButton(
                       onPressed: () => _submitApplication(widget.jobPostId),
                       style: ElevatedButton.styleFrom(

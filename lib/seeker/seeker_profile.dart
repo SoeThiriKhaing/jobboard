@@ -24,7 +24,6 @@ class SeekerProfileState extends State<SeekerProfile> {
   User? _user;
   String? _profileImageUrl;
   String _location = '';
-
   String _education = '';
   String _skills = '';
   String _languages = '';
@@ -213,133 +212,145 @@ class SeekerProfileState extends State<SeekerProfile> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: GestureDetector(
-                  onTap: _pickProfileImage,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _profileImageUrl != null
-                        ? NetworkImage(_profileImageUrl!)
-                        : const AssetImage('assets/default_profile_image.png')
-                            as ImageProvider,
-                    child: _profileImageUrl == null
-                        ? const Icon(Icons.add_a_photo)
-                        : null,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: const Text('Full Name'),
-                  subtitle: TextField(
-                    controller: _fullNameController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter your full name',
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: GestureDetector(
+                      onTap: _pickProfileImage,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: _profileImageUrl != null
+                            ? NetworkImage(_profileImageUrl!)
+                            : const AssetImage(
+                                    'assets/default_profile_image.png')
+                                as ImageProvider,
+                        child: _profileImageUrl == null
+                            ? const Icon(Icons.add_a_photo)
+                            : null,
+                      ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _fullName = value;
-                      });
-                    },
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: Text('Email: ${_user!.email ?? 'N/A'}'),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: const Text('Location'),
-                  subtitle: TextField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter your location',
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: const Text('Full Name'),
+                      subtitle: TextField(
+                        controller: _fullNameController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your full name',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _fullName = value;
+                          });
+                        },
+                      ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _location = value;
-                      });
-                    },
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: const Text('Education'),
-                  subtitle: TextField(
-                    controller: _educationController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter your education',
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: Text('Email: ${_user!.email ?? 'N/A'}'),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _education = value;
-                      });
-                    },
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: const Text('Skills'),
-                  subtitle: TextField(
-                    controller: _skillsController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter your skills',
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: const Text('Location'),
+                      subtitle: TextField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your location',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _location = value;
+                          });
+                        },
+                      ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _skills = value;
-                      });
-                    },
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  title: const Text('Languages'),
-                  subtitle: TextField(
-                    controller: _languagesController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter your languages',
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: const Text('Education'),
+                      subtitle: TextField(
+                        controller: _educationController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your education',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _education = value;
+                          });
+                        },
+                      ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _languages = value;
-                      });
-                    },
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: const Text('Skills'),
+                      subtitle: TextField(
+                        controller: _skillsController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your skills',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _skills = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      title: const Text('Languages'),
+                      subtitle: TextField(
+                        controller: _languagesController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your languages',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _languages = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _updateProfileData,
-                  child: const Text('Save Profile'),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: ElevatedButton(
+              onPressed: _updateProfileData,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: RegistrationForm.navyColor),
+              child: Text(
+                'Save Profile',
+                style: btnTextStyle,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

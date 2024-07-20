@@ -1,4 +1,4 @@
-import 'package:codehunt/auth/login.dart';
+import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -24,7 +24,7 @@ class SeekerSetting extends StatelessWidget {
             leading: const Icon(Icons.language),
             title: const Text('Language'),
             onTap: () {
-              //Navigate to Language setting
+ 
             },
           ),
           ListTile(
@@ -34,7 +34,7 @@ class SeekerSetting extends StatelessWidget {
               await FirebaseAuth.instance.signOut();
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const LoginForm()),
+                MaterialPageRoute(builder: (context) => const SeekerMainpage(seekerEmail: '',)),
                 (Route<dynamic> route) => false,
               );
             },

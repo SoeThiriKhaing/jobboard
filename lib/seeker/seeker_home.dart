@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/employer/about_company.dart'; 
 import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:codehunt/seeker/jobapplication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SeekerHome extends StatefulWidget {
-  const SeekerHome({super.key, required String seekerEmail});
+  const SeekerHome({super.key, required this.seekerEmail});
+
+  final String seekerEmail;
 
   @override
   SeekerHomeState createState() => SeekerHomeState();
@@ -15,6 +17,28 @@ class SeekerHome extends StatefulWidget {
 
 class SeekerHomeState extends State<SeekerHome> {
   String searchQuery = '';
+  Set<String> savedJobIds = Set<String>(); // Track saved jobs
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedJobs();
+  }
+
+  void _loadSavedJobs() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final savedJobsSnapshot = await FirebaseFirestore.instance
+          .collection('saved_jobs')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+      setState(() {
+        savedJobIds = savedJobsSnapshot.docs
+            .map((doc) => doc['jobPostId'] as String)
+            .toSet();
+      });
+    }
+  }
 
   void _saveJob(String jobId) {
     final user = FirebaseAuth.instance.currentUser;
@@ -24,11 +48,14 @@ class SeekerHomeState extends State<SeekerHome> {
         'jobPostId': jobId,
         'userId': user.uid,
         'savedAt': Timestamp.now(),
+      }).then((_) {
+        setState(() {
+          savedJobIds.add(jobId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Job saved successfully!')),
+        );
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Job saved successfully!')),
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('You need to be signed in to save jobs.')),
@@ -36,9 +63,31 @@ class SeekerHomeState extends State<SeekerHome> {
     }
   }
 
+  void _unsaveJob(String jobId) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      FirebaseFirestore.instance
+          .collection('saved_jobs')
+          .where('jobPostId', isEqualTo: jobId)
+          .where('userId', isEqualTo: user.uid)
+          .get()
+          .then((snapshot) {
+        for (var doc in snapshot.docs) {
+          doc.reference.delete();
+        }
+        setState(() {
+          savedJobIds.remove(jobId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Job removed from saved list!')),
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isSaved = false;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +101,7 @@ class SeekerHomeState extends State<SeekerHome> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(14.0),
             child: Container(
               width: screenWidth,
               decoration: BoxDecoration(
@@ -63,7 +112,7 @@ class SeekerHomeState extends State<SeekerHome> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: const Offset(0, 5), // changes position of shadow
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
@@ -113,114 +162,122 @@ class SeekerHomeState extends State<SeekerHome> {
 
                 return ListView(
                   children: filteredDocs.map((doc) {
-                    return Card(
-                      color: Colors.white,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 6.0, horizontal: 14.0),
-                      child: ListTile(
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (doc['companyLogo'] != null)
-                              ClipOval(
-                                child: Image.network(
-                                  doc['companyLogo'],
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
+                    var jobPostData = doc.data() as Map<String, dynamic>?;
+
+                    bool isSaved = savedJobIds.contains(doc.id);
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (FirebaseAuth.instance.currentUser == null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginForm(),
+                            ),
+                          );
+                        } else if (jobPostData != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AboutCompany(
+                                jobPostId: doc.id,
+                                jobPostData: jobPostData,
+                                seekerEmail: widget.seekerEmail,
                               ),
-                            const SizedBox(height: 20),
-                            Text(
-                              '${doc['title']}',
-                              style: titleTextStyle,
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Text('Company Name: ${doc['company']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('SalaryRange: ${doc['salaryRange']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Job Description: ${doc['description']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Job Location: ${doc['location']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Experience Level: ${doc['experienceLevel']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Required Skills: ${doc['requiredSkills']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Job Type: ${doc['jobType']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Posting Date: ${doc['postingDate']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Text('Ending Date: ${doc['endingDate']}',
-                                style: postTextStyle),
-                            const SizedBox(height: 14),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (FirebaseAuth.instance.currentUser ==
-                                        null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoginForm()),
-                                      );
-                                    } else {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              JobApplicationForm(
-                                            jobPostId: doc.id,
-                                            jobPostData: doc.data()
-                                                as Map<String, dynamic>,
-                                            seekerEmail: '',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: RegistrationForm.navyColor,
+                          );
+                        }
+                      },
+                      child: Card(
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 6.0, horizontal: 14.0),
+                        child: ListTile(
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (jobPostData?['companyLogo'] != null)
+                                    ClipOval(
+                                      child: Image.network(
+                                        jobPostData!['companyLogo'],
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  IconButton(
+                                    onPressed: () {
+                                      if (isSaved) {
+                                        _unsaveJob(doc.id);
+                                      } else {
+                                        _saveJob(doc.id);
+                                      }
+                                    },
+                                    icon: Icon(
+                                      isSaved
+                                          ? Icons.bookmark
+                                          : Icons.bookmark_border,
+                                      color:
+                                          isSaved ? Colors.pink : Colors.grey,
+                                    ),
                                   ),
-                                  child: Text(
-                                    'Apply',
-                                    style: btnTextStyle,
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${jobPostData?['title']}',
+                                    style: titleTextStyle,
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                IconButton(
-                                  onPressed: () {
-                                    _saveJob(doc.id);
-                                    setState(() {
-                                      isSaved = !isSaved;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    isSaved
-                                        ? Icons.bookmark
-                                        : Icons.bookmark_border,
-                                    color: isSaved ? Colors.pink : Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Text('${jobPostData?['company']}',
+                                      style: postTextStyle),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(Icons.attach_money,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Text('${jobPostData?['salaryRange']}',
+                                      style: postTextStyle),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Text('${jobPostData?['postingDate']}',
+                                      style: postTextStyle),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Text('${jobPostData?['location']}',
+                                      style: postTextStyle),
+                                ],
+                              ),
+                            ],
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
                         ),
-                        contentPadding: const EdgeInsets.all(16),
                       ),
                     );
                   }).toList(),
