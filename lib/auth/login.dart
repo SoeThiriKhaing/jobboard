@@ -46,11 +46,13 @@ class LoginFormState extends State<LoginForm> {
                     const SeekerMainpage(seekerEmail: 'Jobseeker')),
           );
         } else if (role == 'Employer') {
+          
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => const EmployerPage(
-                      employerEmail: 'employer',
+                      employerEmail: "employer",
                     )),
           );
         } else {

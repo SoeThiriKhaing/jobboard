@@ -29,6 +29,15 @@ class SeekerProfileState extends State<SeekerProfile> {
   String _languages = '';
   String _fullName = '';
 
+  // Original values
+  String _originalLocation = '';
+  String _originalEducation = '';
+  String _originalSkills = '';
+  String _originalLanguages = '';
+  String _originalFullName = '';
+
+  bool _hasUnsavedChanges = false;
+
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _educationController = TextEditingController();
   final TextEditingController _skillsController = TextEditingController();
@@ -59,6 +68,13 @@ class SeekerProfileState extends State<SeekerProfile> {
           _languages = data['languages'] ?? '';
           _fullName = data['fullName'] ?? '';
 
+          // Set original values
+          _originalLocation = _location;
+          _originalEducation = _education;
+          _originalSkills = _skills;
+          _originalLanguages = _languages;
+          _originalFullName = _fullName;
+
           _locationController.text = _location;
           _educationController.text = _education;
           _skillsController.text = _skills;
@@ -79,6 +95,20 @@ class SeekerProfileState extends State<SeekerProfile> {
       'skills': _skills,
       'languages': _languages,
       'fullName': _fullName,
+    });
+    setState(() {
+      // After updating, mark as no unsaved changes
+      _hasUnsavedChanges = false;
+    });
+  }
+
+  void _onTextFieldChanged() {
+    setState(() {
+      _hasUnsavedChanges = _location != _originalLocation ||
+          _education != _originalEducation ||
+          _skills != _originalSkills ||
+          _languages != _originalLanguages ||
+          _fullName != _originalFullName;
     });
   }
 
@@ -212,11 +242,11 @@ class SeekerProfileState extends State<SeekerProfile> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Expanded(
             child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -249,6 +279,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _fullName = value;
+                            _onTextFieldChanged();
                           });
                         },
                       ),
@@ -273,6 +304,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _location = value;
+                            _onTextFieldChanged();
                           });
                         },
                       ),
@@ -291,6 +323,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _education = value;
+                            _onTextFieldChanged();
                           });
                         },
                       ),
@@ -309,6 +342,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _skills = value;
+                            _onTextFieldChanged();
                           });
                         },
                       ),
@@ -327,6 +361,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _languages = value;
+                            _onTextFieldChanged();
                           });
                         },
                       ),
@@ -336,17 +371,22 @@ class SeekerProfileState extends State<SeekerProfile> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: ElevatedButton(
-              onPressed: _updateProfileData,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: RegistrationForm.navyColor),
-              child: Text(
-                'Save Profile',
-                style: btnTextStyle,
+          Visibility(
+            visible: _hasUnsavedChanges,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                width: screenWidth,
+                child: ElevatedButton(
+                  onPressed: _updateProfileData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: RegistrationForm.navyColor,
+                  ),
+                  child: Text(
+                    'Save Profile',
+                    style: btnTextStyle,
+                  ),
+                ),
               ),
             ),
           ),

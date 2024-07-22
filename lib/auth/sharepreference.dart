@@ -20,4 +20,13 @@ class SharePreferenceService {
     pref.remove(userRoleKey);
     return const LoginForm();
   }
+  Future<void> _setLanguage(String languageCode) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('language_code', languageCode);
+}
+
+Future<String?> _getLanguage() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('language_code');
+}
 }

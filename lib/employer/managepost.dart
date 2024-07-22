@@ -77,7 +77,7 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('job_posts')
-            .where('jobPostId', isEqualTo:user.uid)
+            .where('jobPostId', isEqualTo: user.uid)
             .where('postedBy', isEqualTo: widget.employerEmail)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -103,16 +103,6 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (doc['companyLogo'] != null)
-                              ClipOval(
-                                child: Image.network(
-                                  doc['companyLogo'],
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            const SizedBox(height: 20),
                             Text(
                               '${doc['title']}',
                               style: titleTextStyle,
@@ -121,37 +111,32 @@ class _ManagePostsPageState extends State<ManagePostsPage> {
                               height: 20,
                             ),
                             Text(
-                              'Company Name: ${doc['company']}',
+                              ' ${doc['company']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              'SalaryRange: ${doc['salaryRange']}',
+                              '${doc['salaryRange']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              'Job Description: ${doc['description']}',
+                              ' ${doc['location']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              'Job Location: ${doc['location']}',
+                              '${doc['experienceLevel']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              'Experience Level: ${doc['experienceLevel']}',
+                              '${doc['requiredSkills']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              'Required Skills: ${doc['requiredSkills']}',
-                              style: postTextStyle,
-                            ),
-                            const SizedBox(height: 14),
-                            Text(
-                              'Job Type: ${doc['jobType']}',
+                              '${doc['jobType']}',
                               style: postTextStyle,
                             ),
                             const SizedBox(height: 14),

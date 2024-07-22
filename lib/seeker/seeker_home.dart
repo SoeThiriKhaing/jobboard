@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/employer/about_company.dart'; 
+import 'package:codehunt/employer/about_company.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class SeekerHome extends StatefulWidget {
 
 class SeekerHomeState extends State<SeekerHome> {
   String searchQuery = '';
-  Set<String> savedJobIds = Set<String>(); // Track saved jobs
+  Set<String> savedJobIds = Set<String>(); 
 
   @override
   void initState() {
@@ -183,6 +183,7 @@ class SeekerHomeState extends State<SeekerHome> {
                                 jobPostId: doc.id,
                                 jobPostData: jobPostData,
                                 seekerEmail: widget.seekerEmail,
+                                employerEmail: '',
                               ),
                             ),
                           );
@@ -259,6 +260,7 @@ class SeekerHomeState extends State<SeekerHome> {
                                 children: [
                                   const Icon(Icons.calendar_today,
                                       color: Colors.grey),
+
                                   const SizedBox(width: 8),
                                   Text('${jobPostData?['postingDate']}',
                                       style: postTextStyle),

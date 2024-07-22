@@ -101,8 +101,7 @@ class _SavedJobsPageState extends State<SavedJobsPage> {
 
                     return ListView(
                       children: snapshot.data!.docs.map((doc) {
-                        bool isSaved =
-                            true; // Assuming jobs in this list are saved
+                        bool isSaved = true;
 
                         return GestureDetector(
                           onTap: () {
@@ -114,6 +113,7 @@ class _SavedJobsPageState extends State<SavedJobsPage> {
                                   jobPostData:
                                       doc.data() as Map<String, dynamic>,
                                   seekerEmail: '',
+                                  employerEmail: '',
                                 ),
                               ),
                             );
@@ -203,7 +203,8 @@ class _SavedJobsPageState extends State<SavedJobsPage> {
                                   const SizedBox(height: 14),
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_on),
+                                      const Icon(Icons.location_on,
+                                          color: Colors.grey),
                                       Text(' ${doc['location']}',
                                           style: postTextStyle),
                                     ],

@@ -37,6 +37,7 @@ class EmployerProfileState extends State<EmployerProfile> {
   String _foundingDate = '';
 
   bool _hasUnsavedChanges = false;
+  bool _showMore = false;
 
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -60,7 +61,7 @@ class EmployerProfileState extends State<EmployerProfile> {
   Future<void> _loadProfileData() async {
     if (_user == null) return;
     DocumentSnapshot snapshot =
-        await _firestore.collection('companies').doc(_user!.uid).get();
+        await _firestore.collection('users').doc(_user!.uid).get();
     if (snapshot.exists) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (mounted) {
@@ -94,6 +95,7 @@ class EmployerProfileState extends State<EmployerProfile> {
 
     await _firestore.collection('users').doc(_user!.uid).update({
       'profileImageUrl': _profileImageUrl,
+      'backgroundImageUrl': _backgroundImageUrl,
       'companyName': _companyName,
       'email': _email,
       'websiteUrl': _websiteUrl,
@@ -204,19 +206,13 @@ class EmployerProfileState extends State<EmployerProfile> {
           ),
           backgroundColor: RegistrationForm.navyColor,
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Center(
-              child: Text("Please log in to see your profile"),
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12.0),
-              width: screenWidth,
-              child: ElevatedButton(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Please log in to see your profile"),
+              const SizedBox(height: 30.0),
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -231,8 +227,8 @@ class EmployerProfileState extends State<EmployerProfile> {
                   style: btnTextStyle,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -260,182 +256,232 @@ class EmployerProfileState extends State<EmployerProfile> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: _pickBackgroundImage,
-                    child: Container(
-                      width: double.infinity,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 2.0,
+                  Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      GestureDetector(
+                        onTap: _pickBackgroundImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            image: _backgroundImageUrl != null
+                                ? DecorationImage(
+                                    image: NetworkImage(_backgroundImageUrl!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: _backgroundImageUrl == null
+                              ? const Center(
+                                  child: Text(
+                                    'Add Background Image',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                )
+                              : null,
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                        image: _backgroundImageUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(_backgroundImageUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : const DecorationImage(
-                                image:
-                                    AssetImage('assets/default_background.png'),
-                                fit: BoxFit.cover,
-                              ),
                       ),
-                      child: const Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 30,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 54.0, left: 16, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: _pickProfileImage,
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: _profileImageUrl != null
+                                    ? NetworkImage(_profileImageUrl!)
+                                    : null,
+                                child: _profileImageUrl == null
+                                    ? const Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.white,
+                                        size: 40,
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: _companyNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Company Name',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _companyName = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Company Email',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _email = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _websiteUrlController,
+                          decoration: const InputDecoration(
+                            labelText: 'Company Website URL',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _websiteUrl = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _locationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Company Location',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _location = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _descriptionController,
+                          maxLines: _showMore ? null : 2,
+                          decoration: InputDecoration(
+                            labelText: 'Company Description',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _showMore
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _showMore = !_showMore;
+                                });
+                              },
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _description = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _industryController,
+                          decoration: const InputDecoration(
+                            labelText: 'Industry',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _industry = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _sizeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Company Size',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _size = value;
+                              _hasUnsavedChanges = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        GestureDetector(
+                          onTap: () => _selectFoundingDate(context),
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: _foundingDateController,
+                              decoration: const InputDecoration(
+                                labelText: 'Founding Date',
+                                border: OutlineInputBorder(),
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 16.0),
+                      ],
                     ),
                   ),
-                  if (_profileImageUrl != null)
-                    Positioned(
-                      top: 150,
-                      child: GestureDetector(
-                        onTap: _pickProfileImage,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: 48,
-                            backgroundImage: NetworkImage(_profileImageUrl!),
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _companyNameController,
-                labelText: 'Company Name',
-                onChanged: (value) {
-                  setState(() {
-                    _companyName = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _emailController,
-                labelText: 'Email',
-                onChanged: (value) {
-                  setState(() {
-                    _email = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _websiteUrlController,
-                labelText: 'Website URL',
-                onChanged: (value) {
-                  setState(() {
-                    _websiteUrl = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _locationController,
-                labelText: 'Location',
-                onChanged: (value) {
-                  setState(() {
-                    _location = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _descriptionController,
-                labelText: 'Description',
-                maxLines: 3,
-                onChanged: (value) {
-                  setState(() {
-                    _description = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _industryController,
-                labelText: 'Industry',
-                onChanged: (value) {
-                  setState(() {
-                    _industry = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              _buildTextField(
-                controller: _sizeController,
-                labelText: 'Size',
-                onChanged: (value) {
-                  setState(() {
-                    _size = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-              ),
-              GestureDetector(
-                onTap: () => _selectFoundingDate(context),
-                child: AbsorbPointer(
-                  child: TextField(
-                    controller: _foundingDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Founding Date',
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                    readOnly: true,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (_hasUnsavedChanges)
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _handleSaveButton,
-                    child: const Text('Save Changes'),
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String labelText,
-    int maxLines = 1,
-    required ValueChanged<String> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-        ),
-        maxLines: maxLines,
-        onChanged: onChanged,
+          Visibility(
+            visible: _hasUnsavedChanges,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: screenWidth,
+                child: ElevatedButton(
+                  onPressed: _handleSaveButton,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: RegistrationForm.navyColor,
+                  ),
+                  child: Text(
+                    'Save Profile',
+                    style: btnTextStyle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

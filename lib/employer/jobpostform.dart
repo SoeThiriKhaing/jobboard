@@ -281,7 +281,7 @@ class JobPostFormState extends State<JobPostForm> {
                       controller: _postingDateController,
                       decoration: _inputDecoration.copyWith(
                         labelText: 'Posting Date',
-                        suffixIcon: Icon(Icons.calendar_today),
+                        suffixIcon: const Icon(Icons.calendar_today),
                       ),
                       validator: validateTextField,
                       readOnly: true,
@@ -294,7 +294,7 @@ class JobPostFormState extends State<JobPostForm> {
                       controller: _endingDateController,
                       decoration: _inputDecoration.copyWith(
                         labelText: 'Ending Date',
-                        suffixIcon: Icon(Icons.calendar_today),
+                        suffixIcon: const Icon(Icons.calendar_today),
                       ),
                       validator: validateTextField,
                       readOnly: true,

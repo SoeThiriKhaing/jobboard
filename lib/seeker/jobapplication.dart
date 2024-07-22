@@ -267,84 +267,18 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Full Name',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your full name';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildTextFormField(_nameController, 'Full Name'),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                    ),
-                    readOnly: true,
-                  ),
+                  _buildTextFormField(_emailController, 'Email',
+                      readOnly: true),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                      labelText: "Location",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your location';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildTextFormField(_locationController, 'Location'),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _educationController,
-                    decoration: const InputDecoration(
-                      labelText: "Education",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your education';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildTextFormField(_educationController, 'Education'),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _skillController,
-                    decoration: const InputDecoration(
-                      labelText: "Skills",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your skills';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildTextFormField(_skillController, 'Skills'),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _languagesController,
-                    decoration: const InputDecoration(
-                      labelText: "Languages",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your languages';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildTextFormField(_languagesController, 'Languages'),
                   const SizedBox(height: 20),
                   Container(
                     width: screenWidth,
@@ -355,7 +289,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                         backgroundColor: Colors.white,
                       ),
                       label: Text(
-                        'Upload CoverLetter',
+                        'Upload Cover Letter',
                         style: dashTextStyle,
                       ),
                     ),
@@ -375,39 +309,61 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  if (_resumeFile != null)
-                    Text(
-                      'Selected file: ${_resumeFile!.name}',
-                      style: const TextStyle(fontStyle: FontStyle.italic),
-                    ),
-                  const SizedBox(height: 10),
-                  if (_resumeUrl != null)
-                    ElevatedButton(
-                      onPressed: () => _launchURL(_resumeUrl!),
-                      child: Text(
-                        'View Resume',
-                        style: btnTextStyle,
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: screenWidth,
-                    child: ElevatedButton(
-                      onPressed: () => _submitApplication(widget.jobPostId),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: RegistrationForm.navyColor,
-                      ),
-                      child: Text(
-                        'Submit Application',
-                        style: btnTextStyle,
-                      ),
-                    ),
-                  )
+                  const SizedBox(height: 20),
+                  _alreadyApplied
+                      ? const Text('You have already applied for this job.')
+                      : Container(
+                          width: screenWidth,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _submitApplication(widget.jobPostId);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: RegistrationForm.navyColor,
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                            ),
+                            child: Text(
+                              'Submit Application',
+                              style: btnTextStyle,
+                            ),
+                          ),
+                        ),
                 ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFormField(
+    TextEditingController controller,
+    String label, {
+    bool readOnly = false,
+  }) {
+    return Card(
+      margin: EdgeInsets.zero,
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: TextFormField(
+          controller: controller,
+          readOnly: readOnly,
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your $label';
+            }
+            return null;
+          },
         ),
       ),
     );
