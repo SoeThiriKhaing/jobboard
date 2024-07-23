@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 class JobApplicationForm extends StatefulWidget {
   final String jobPostId;
   final String seekerEmail;
+
   final Map<String, dynamic> jobPostData;
 
   const JobApplicationForm({
@@ -19,6 +20,7 @@ class JobApplicationForm extends StatefulWidget {
     required this.jobPostId,
     required this.jobPostData,
     required this.seekerEmail,
+    required String employerEmail,
   });
 
   @override
@@ -161,18 +163,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        if (_resumeFile != null) {
-          await _uploadFile(_resumeFile!.path!, _resumeFile!.name, 'resumes');
-        }
-        if (_coverLetterFile != null) {
-          await _uploadFile(
-              _coverLetterFile!.path!, _coverLetterFile!.name, 'coverletter');
-        }
-        if (_profileImage != null) {
-          await _uploadFile(
-              _profileImage!.path, _profileImage!.name, 'profile_images');
-        }
-
         final applicationData = {
           'jobPostId': jobPostId,
           'applicantId': user.uid,
@@ -193,6 +183,49 @@ class JobApplicationFormState extends State<JobApplicationForm> {
             .collection('job_applications')
             .add(applicationData);
 
+        final employerEmail = widget.jobPostData['postedBy'];
+        if (employerEmail == null || employerEmail.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Employer email not provided.')),
+          );
+          return;
+        }
+
+        final subject = 'Job Application for ${widget.jobPostData['title']}';
+        final body = '''
+      Name: ${_nameController.text}
+      Email: ${_emailController.text}
+      Location: ${_locationController.text}
+      Education: ${_educationController.text}
+      Skills: ${_skillController.text}
+      Languages: ${_languagesController.text}
+      Cover Letter: ${_coverLetter}
+      Resume: ${_resumeUrl}
+      Profile Image: ${_profileImageUrl}
+      Application Date: ${DateTime.now()}
+      ''';
+
+        final mailtoUrl = Uri(
+          scheme: 'mailto',
+          path: widget.jobPostData['postedBy'] ?? '',
+          query: Uri.encodeComponent('subject=$subject&body=$body'),
+        ).toString();
+
+        // Launch email client
+        try {
+          if (await canLaunch(mailtoUrl)) {
+            await launch(mailtoUrl);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not launch email client.')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Application submitted successfully!')),
         );
@@ -203,23 +236,15 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           const SnackBar(content: Text('You need to be signed in to apply.')),
         );
       }
-    } else if (_alreadyApplied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You have already applied for this job.')),
-      );
+      // } else if (_alreadyApplied) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text('You have already applied for this job.')),
+      //   );
     } else if (_resumeFile == null || _coverLetterFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Please upload both cover letter and resume.')),
       );
-    }
-  }
-
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 
@@ -280,7 +305,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                   const SizedBox(height: 20),
                   _buildTextFormField(_languagesController, 'Languages'),
                   const SizedBox(height: 20),
-                  Container(
+                  SizedBox(
                     width: screenWidth,
                     child: ElevatedButton.icon(
                       onPressed: _pickCoverLetter,

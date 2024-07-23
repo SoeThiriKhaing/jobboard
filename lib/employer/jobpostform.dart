@@ -54,7 +54,8 @@ class JobPostFormState extends State<JobPostForm> {
         final jobPostId = jobPostRef.id;
 
         await jobPostRef.set({
-          'jobPostId': user?.uid,
+          'employerId': user?.uid,
+          'jobPostId': jobPostId,
           'title': _titleController.text,
           'company': _companyController.text,
           'salaryRange': _salaryRangeController.text,

@@ -51,11 +51,10 @@ class EmployerHomePageState extends State<EmployerHomePage> {
               return GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2, 
+                crossAxisCount: 2,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
-                childAspectRatio:
-                    3 / 2, 
+                childAspectRatio: 3 / 2,
                 children: [
                   _buildJobPostCard(context, totalJobPosts),
                   _buildStatisticsCard(context),
@@ -183,3 +182,165 @@ class EmployerHomePageState extends State<EmployerHomePage> {
     );
   }
 }
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:codehunt/auth/login.dart';
+// import 'package:codehunt/auth/register.dart';
+// import 'package:codehunt/form_decoration/textstyle.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+
+// class EmployerHomePage extends StatefulWidget {
+//   final String employerEmail;
+
+//   const EmployerHomePage({super.key, required this.employerEmail});
+
+//   @override
+//   EmployerHomePageState createState() => EmployerHomePageState();
+// }
+
+// class EmployerHomePageState extends State<EmployerHomePage> {
+//   String searchQuery = '';
+//   late Future<List<DocumentSnapshot>> _seekersFuture;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _seekersFuture = _fetchSeekers();
+//   }
+
+//   Future<List<DocumentSnapshot>> _fetchSeekers() async {
+//     try {
+//       final querySnapshot =
+//           await FirebaseFirestore.instance.collection('seekers').get();
+//       return querySnapshot.docs;
+//     } catch (e) {
+//       print("Error fetching seekers: $e");
+//       return [];
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     double screenWidth = MediaQuery.of(context).size.width;
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         automaticallyImplyLeading: false,
+//         title: Text(
+//           'Find',
+//           style: appBarTextStyle,
+//         ),
+//         backgroundColor: RegistrationForm.navyColor,
+//       ),
+//       body: Column(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(14.0),
+//             child: Container(
+//               width: screenWidth,
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(20.0),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.grey.withOpacity(0.5),
+//                     spreadRadius: 2,
+//                     blurRadius: 5,
+//                     offset: const Offset(0, 5),
+//                   ),
+//                 ],
+//               ),
+//               child: TextField(
+//                 decoration: InputDecoration(
+//                     hintText: 'Search by Seeker name or skill',
+//                     hintStyle:
+//                         const TextStyle(color: Colors.grey, fontSize: 15),
+//                     border: InputBorder.none,
+//                     contentPadding: const EdgeInsets.symmetric(
+//                         vertical: 15.0, horizontal: 20),
+//                     suffixIcon: IconButton(
+//                       onPressed: () {
+//                         setState(() {
+//                           // Refresh the seekers list based on the search query
+//                           _seekersFuture = _fetchSeekers();
+//                         });
+//                       },
+//                       icon: const Icon(
+//                         Icons.search,
+//                       ),
+//                       color: RegistrationForm.navyColor,
+//                     )),
+//                 onChanged: (value) {
+//                   setState(() {
+//                     searchQuery = value.toLowerCase();
+//                   });
+//                 },
+//               ),
+//             ),
+//           ),
+//           Expanded(
+//             child: FutureBuilder<List<DocumentSnapshot>>(
+//               future: _seekersFuture,
+//               builder: (context, snapshot) {
+//                 if (snapshot.connectionState == ConnectionState.waiting) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 }
+//                 if (snapshot.hasError) {
+//                   return Center(child: Text('Error: ${snapshot.error}'));
+//                 }
+
+//                 final seekers = snapshot.data ?? [];
+//                 final filteredSeekers = seekers.where((doc) {
+//                   final data = doc.data() as Map<String, dynamic>?;
+//                   final name = data?['name']?.toString().toLowerCase() ?? '';
+//                   final skills = (data?['skills'] as List<dynamic>?)
+//                           ?.map((skill) => skill.toString().toLowerCase())
+//                           .toList() ??
+//                       [];
+
+//                   return name.contains(searchQuery) ||
+//                       skills.any((skill) => skill.contains(searchQuery));
+//                 }).toList();
+
+//                 return ListView(
+//                   children: filteredSeekers.map((doc) {
+//                     final data = doc.data() as Map<String, dynamic>?;
+
+//                     return Card(
+//                       margin: const EdgeInsets.symmetric(
+//                           vertical: 6.0, horizontal: 14.0),
+//                       child: ListTile(
+//                         title: Text(data?['name'] ?? 'No Name'),
+//                         subtitle: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             if (data?['profileImage'] != null)
+//                               ClipOval(
+//                                 child: Image.network(
+//                                   data!['profileImage'],
+//                                   width: 60,
+//                                   height: 60,
+//                                   fit: BoxFit.cover,
+//                                 ),
+//                               ),
+//                             const SizedBox(height: 10),
+//                             Text(
+//                                 'Skills: ${data?['skills']?.join(', ') ?? 'No Skills'}'),
+//                             const SizedBox(height: 8),
+//                             Text('Email: ${data?['email'] ?? 'No Email'}'),
+//                             const SizedBox(height: 14),
+//                           ],
+//                         ),
+//                         contentPadding: const EdgeInsets.all(16),
+//                       ),
+//                     );
+//                   }).toList(),
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

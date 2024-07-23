@@ -1,47 +1,5 @@
-// import 'package:flutter/material.dart';
-
-// class LanguageSettings extends StatefulWidget {
-//   const LanguageSettings({super.key});
-
-//   @override
-//   LanguageSettingsState createState() => LanguageSettingsState();
-// }
-
-// class LanguageSettingsState extends State<LanguageSettings> {
-//   String _selectedLanguage = 'English'; // Default language
-
-//   // List of languages
-//   final List<String> _languages = ['Burmese', 'English', 'Japanese', 'Bahasa'];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Language Settings'),
-//       ),
-//       body: ListView(
-//         children: _languages.map((language) {
-//           return ListTile(
-//             title: Text(language),
-//             leading: Radio<String>(
-//               value: language,
-//               groupValue: _selectedLanguage,
-//               onChanged: (String? value) {
-//                 setState(() {
-//                   _selectedLanguage = value!;
-//                 });
-//                 // Save the selected language to user preferences or database
-//               },
-//             ),
-//           );
-//         }).toList(),
-//       ),
-//     );
-//   }
-// }
 import 'package:codehunt/main.dart';
 import 'package:flutter/material.dart';
-
 
 class LanguageSettings extends StatefulWidget {
   const LanguageSettings({super.key});
@@ -51,9 +9,8 @@ class LanguageSettings extends StatefulWidget {
 }
 
 class _LanguageSettingsState extends State<LanguageSettings> {
-  String _selectedLanguage = 'en'; // Default language
+  String _selectedLanguage = 'en';
 
-  // List of languages
   final Map<String, String> _languages = {
     'Burmese': 'my',
     'English': 'en',

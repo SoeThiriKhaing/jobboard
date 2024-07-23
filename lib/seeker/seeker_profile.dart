@@ -28,13 +28,14 @@ class SeekerProfileState extends State<SeekerProfile> {
   String _skills = '';
   String _languages = '';
   String _fullName = '';
-
+  String _description = '';
   // Original values
   String _originalLocation = '';
   String _originalEducation = '';
   String _originalSkills = '';
   String _originalLanguages = '';
   String _originalFullName = '';
+  String _originalDescription = '';
 
   bool _hasUnsavedChanges = false;
 
@@ -43,6 +44,7 @@ class SeekerProfileState extends State<SeekerProfile> {
   final TextEditingController _skillsController = TextEditingController();
   final TextEditingController _languagesController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -67,6 +69,7 @@ class SeekerProfileState extends State<SeekerProfile> {
           _skills = data['skills'] ?? '';
           _languages = data['languages'] ?? '';
           _fullName = data['fullName'] ?? '';
+          _description = data['description'] ?? '';
 
           // Set original values
           _originalLocation = _location;
@@ -74,12 +77,14 @@ class SeekerProfileState extends State<SeekerProfile> {
           _originalSkills = _skills;
           _originalLanguages = _languages;
           _originalFullName = _fullName;
+          _originalDescription = _description;
 
           _locationController.text = _location;
           _educationController.text = _education;
           _skillsController.text = _skills;
           _languagesController.text = _languages;
           _fullNameController.text = _fullName;
+          _descriptionController.text = _description;
         });
       }
     }
@@ -95,6 +100,7 @@ class SeekerProfileState extends State<SeekerProfile> {
       'skills': _skills,
       'languages': _languages,
       'fullName': _fullName,
+      'description': _description,
     });
     setState(() {
       // After updating, mark as no unsaved changes
@@ -108,7 +114,8 @@ class SeekerProfileState extends State<SeekerProfile> {
           _education != _originalEducation ||
           _skills != _originalSkills ||
           _languages != _originalLanguages ||
-          _fullName != _originalFullName;
+          _fullName != _originalFullName ||
+          _description != _originalDescription;
     });
   }
 
@@ -170,6 +177,7 @@ class SeekerProfileState extends State<SeekerProfile> {
     _skillsController.dispose();
     _languagesController.dispose();
     _fullNameController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -268,6 +276,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                   ),
                   const SizedBox(height: 16),
                   Card(
+                    color: Colors.white,
                     child: ListTile(
                       title: const Text('Full Name'),
                       subtitle: TextField(
@@ -287,12 +296,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                   ),
                   const SizedBox(height: 16),
                   Card(
-                    child: ListTile(
-                      title: Text('Email: ${_user!.email ?? 'N/A'}'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Card(
+                    color: Colors.white,
                     child: ListTile(
                       title: const Text('Location'),
                       subtitle: TextField(
@@ -312,6 +316,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                   ),
                   const SizedBox(height: 16),
                   Card(
+                    color: Colors.white,
                     child: ListTile(
                       title: const Text('Education'),
                       subtitle: TextField(
@@ -331,6 +336,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                   ),
                   const SizedBox(height: 16),
                   Card(
+                    color: Colors.white,
                     child: ListTile(
                       title: const Text('Skills'),
                       subtitle: TextField(
@@ -350,6 +356,7 @@ class SeekerProfileState extends State<SeekerProfile> {
                   ),
                   const SizedBox(height: 16),
                   Card(
+                    color: Colors.white,
                     child: ListTile(
                       title: const Text('Languages'),
                       subtitle: TextField(
@@ -367,21 +374,39 @@ class SeekerProfileState extends State<SeekerProfile> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Card(
+                    color: Colors.white,
+                    child: ListTile(
+                      title: const Text('Description'),
+                      subtitle: TextField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter a description',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _description = value;
+                            _onTextFieldChanged();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          Visibility(
-            visible: _hasUnsavedChanges,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: screenWidth,
+          if (_hasUnsavedChanges)
+            Container(
+              width: screenWidth,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: _updateProfileData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: RegistrationForm.navyColor,
-                  ),
+                      backgroundColor: RegistrationForm.navyColor),
                   child: Text(
                     'Save Profile',
                     style: btnTextStyle,
@@ -389,7 +414,6 @@ class SeekerProfileState extends State<SeekerProfile> {
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -24,7 +24,7 @@ class Viewjobposts extends StatelessWidget {
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('job_posts')
-              .where('jobPostId', isEqualTo: user?.uid)
+              .where('employerId', isEqualTo: user?.uid)
               .where('postedBy', isEqualTo: employerEmail)
               .snapshots(),
           builder: (context, snapshot) {

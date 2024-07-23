@@ -8,7 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart'; 
 
 class EmployerProfile extends StatefulWidget {
   const EmployerProfile({super.key, required this.employerEmail});
@@ -48,10 +49,17 @@ class EmployerProfileState extends State<EmployerProfile> {
   final TextEditingController _sizeController = TextEditingController();
   final TextEditingController _foundingDateController = TextEditingController();
 
+  var logger = Logger();
+
   @override
   void initState() {
     super.initState();
+
+    logger.d("REACH HERE");
     _user = _auth.currentUser;
+
+    logger.d("User is $_user");
+
     if (_user != null) {
       _emailController.text = _user!.email ?? '';
       _loadProfileData();
@@ -87,6 +95,8 @@ class EmployerProfileState extends State<EmployerProfile> {
           _foundingDateController.text = _foundingDate;
         });
       }
+    } else {
+      print("No Data");
     }
   }
 

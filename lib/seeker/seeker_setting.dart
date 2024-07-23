@@ -1,5 +1,4 @@
 import 'package:codehunt/seeker/seeker_mainpage.dart';
-import 'package:codehunt/setting/language.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -24,13 +23,7 @@ class SeekerSetting extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.language),
             title: const Text('Language'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const LanguageSettings()),
-              );
-            },
+            onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.logout),
