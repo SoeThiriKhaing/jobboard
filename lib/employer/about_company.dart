@@ -59,66 +59,37 @@ class AboutCompanyState extends State<AboutCompany> {
 
   Future<void> _fetchEmployerData() async {
     try {
-      QuerySnapshot snapshot = await _firestore.collection('users').get();
+      // Fetch the user document for the currently logged-in user
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: user?.email)
+          .where('role', isEqualTo: 'Employer')
+          .get();
 
       if (snapshot.docs.isNotEmpty) {
-        for (DocumentSnapshot doc in snapshot.docs) {
-          // Access the data for each user
-          Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
-          //  String userId = doc.id;
-          String? userRole = userData['role'];
+        DocumentSnapshot doc = snapshot.docs.first;
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-          logger.d('User Role: $userRole');
+        setState(() {
+          _profileImageUrl = data['profileImageUrl'] ?? null;
+          backgroundImageUrl = data['backgroundImageUrl'] ?? null;
+          _companyName = data['companyName'] ?? '';
+          _email = data['email'] ?? '';
+          _websiteUrl = data['websiteUrl'] ?? '';
+          _location = data['location'] ?? '';
+          _description = data['description'] ?? '';
+          industry = data['industry'] ?? '';
+          size = data['size'] ?? '';
+          foundingDate = data['foundingDate'] ?? '';
 
-          if (userRole == "Employer") {
-            QuerySnapshot snapshot = await _firestore
-                .collection('users')
-                .where("email", isEqualTo: _email)
-                .get();
-
-            if (snapshot.docs.isNotEmpty) {
-              for (DocumentSnapshot document in snapshot.docs) {
-                Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
-
-                setState(() {
-                  _profileImageUrl = document['profileImageUrl'];
-                  _profileImageUrl = data.containsKey('profileImageUrl')
-                      ? data['profileImageUrl']
-                      : null;
-                  backgroundImageUrl = data.containsKey('backgroundImageUrl')
-                      ? data['backgroundImageUrl']
-                      : null;
-                  _companyName = data.containsKey('companyName')
-                      ? data['companyName']
-                      : '';
-                  _email = data.containsKey('email') ? data['email'] : '';
-                  _websiteUrl =
-                      data.containsKey('websiteUrl') ? data['websiteUrl'] : '';
-                  _location =
-                      data.containsKey('location') ? data['location'] : '';
-                  _description = data.containsKey('description')
-                      ? data['description']
-                      : '';
-                  industry =
-                      data.containsKey('industry') ? data['industry'] : '';
-                  size = data.containsKey('size') ? data['size'] : '';
-                  foundingDate = data.containsKey('foundingDate')
-                      ? data['foundingDate']
-                      : '';
-
-                  logger.d("Company Name is $_companyName");
-                  logger.d("Email  is $_email");
-                  logger.d("Website Url is $_websiteUrl");
-                  logger.d("Location is $_location");
-                  logger.d("Company Desc is $_description");
-                });
-              }
-            }
-          } else {
-            logger.d("User Role is not our ");
-          }
-        }
+          logger.d("Company Name is $_companyName");
+          logger.d("Email is $_email");
+          logger.d("Website Url is $_websiteUrl");
+          logger.d("Location is $_location");
+          logger.d("Company Desc is $_description");
+        });
+      } else {
+        logger.d("No employer data found for the current user.");
       }
     } catch (e) {
       // Show an error message to the user
@@ -259,9 +230,10 @@ class AboutCompanyState extends State<AboutCompany> {
                           const SizedBox(height: 16),
                           Text(
                             'About Company',
-                            style: titleTextStyle.copyWith(fontSize: 18),
+                            style: titleTextStyle.copyWith(
+                                fontSize: 18, color: Colors.purple),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 20),
                           if (_profileImageUrl != null)
                             ClipOval(
                               child: Image.network(
@@ -277,7 +249,7 @@ class AboutCompanyState extends State<AboutCompany> {
                               _companyName!,
                               style: titleTextStyle.copyWith(fontSize: 20),
                             ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
                           if (_email != null)
                             Text(
                               'Email: $_email',
@@ -295,25 +267,25 @@ class AboutCompanyState extends State<AboutCompany> {
                               'Location: $_location',
                               style: postTextStyle,
                             ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 20),
                           if (_description.isNotEmpty)
                             Text(
                               'Description: $_description',
                               style: postTextStyle,
                             ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           if (industry.isNotEmpty)
                             Text(
                               'Industry: $industry',
                               style: postTextStyle,
                             ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           if (size.isNotEmpty)
                             Text(
                               'Size: $size',
                               style: postTextStyle,
                             ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           if (foundingDate.isNotEmpty)
                             Text(
                               'Founding Date: $foundingDate',
@@ -328,38 +300,28 @@ class AboutCompanyState extends State<AboutCompany> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: () {
-                if (FirebaseAuth.instance.currentUser == null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginForm(),
+                // Navigate to job application page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => JobApplicationForm(
+                      jobPostId: widget.jobPostId,
+                      jobPostData: widget.jobPostData,
+                      seekerEmail: widget.seekerEmail,
+                      employerEmail: widget.employerEmail,
                     ),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => JobApplicationForm(
-                        jobPostId: widget.jobPostId,
-                        jobPostData: widget.jobPostData,
-                        seekerEmail: widget.seekerEmail,
-                        employerEmail: widget.employerEmail,
-                      ),
-                    ),
-                  );
-                }
+                  ),
+                );
               },
+              child: Text('Apply Now'),
               style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
                 backgroundColor: RegistrationForm.navyColor,
-              ),
-              child: Text(
-                'Apply',
-                style: btnTextStyle,
+                minimumSize: Size(double.infinity, 50),
               ),
             ),
           ),

@@ -29,6 +29,8 @@ class SeekerProfileState extends State<SeekerProfile> {
   String _languages = '';
   String _fullName = '';
   String _description = '';
+  String _visibility = 'Public'; // Default visibility
+
   // Original values
   String _originalLocation = '';
   String _originalEducation = '';
@@ -36,6 +38,7 @@ class SeekerProfileState extends State<SeekerProfile> {
   String _originalLanguages = '';
   String _originalFullName = '';
   String _originalDescription = '';
+  String _originalVisibility = '';
 
   bool _hasUnsavedChanges = false;
 
@@ -70,6 +73,7 @@ class SeekerProfileState extends State<SeekerProfile> {
           _languages = data['languages'] ?? '';
           _fullName = data['fullName'] ?? '';
           _description = data['description'] ?? '';
+          _visibility = data['visibility'] ?? 'Public'; // Load visibility
 
           // Set original values
           _originalLocation = _location;
@@ -78,6 +82,7 @@ class SeekerProfileState extends State<SeekerProfile> {
           _originalLanguages = _languages;
           _originalFullName = _fullName;
           _originalDescription = _description;
+          _originalVisibility = _visibility;
 
           _locationController.text = _location;
           _educationController.text = _education;
@@ -101,6 +106,7 @@ class SeekerProfileState extends State<SeekerProfile> {
       'languages': _languages,
       'fullName': _fullName,
       'description': _description,
+      'visibility': _visibility, // Save visibility
     });
     setState(() {
       // After updating, mark as no unsaved changes
@@ -115,7 +121,8 @@ class SeekerProfileState extends State<SeekerProfile> {
           _skills != _originalSkills ||
           _languages != _originalLanguages ||
           _fullName != _originalFullName ||
-          _description != _originalDescription;
+          _description != _originalDescription ||
+          _visibility != _originalVisibility; // Check visibility change
     });
   }
 
@@ -288,13 +295,13 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _fullName = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Card(
                     color: Colors.white,
                     child: ListTile(
@@ -308,13 +315,13 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _location = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Card(
                     color: Colors.white,
                     child: ListTile(
@@ -328,13 +335,13 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _education = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Card(
                     color: Colors.white,
                     child: ListTile(
@@ -348,13 +355,13 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _skills = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Card(
                     color: Colors.white,
                     child: ListTile(
@@ -363,24 +370,25 @@ class SeekerProfileState extends State<SeekerProfile> {
                         controller: _languagesController,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'Enter your languages',
+                          hintText: 'Enter languages',
                         ),
                         onChanged: (value) {
                           setState(() {
                             _languages = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Card(
                     color: Colors.white,
                     child: ListTile(
                       title: const Text('Description'),
                       subtitle: TextField(
                         controller: _descriptionController,
+                        maxLines: 4,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Enter a description',
@@ -388,9 +396,32 @@ class SeekerProfileState extends State<SeekerProfile> {
                         onChanged: (value) {
                           setState(() {
                             _description = value;
-                            _onTextFieldChanged();
                           });
+                          _onTextFieldChanged();
                         },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    color: Colors.white,
+                    child: ListTile(
+                      title: const Text('Profile Visibility'),
+                      subtitle: DropdownButton<String>(
+                        value: _visibility,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _visibility = newValue!;
+                          });
+                          _onTextFieldChanged();
+                        },
+                        items: <String>['Public', 'Private']
+                            .map<DropdownMenuItem<String>>(
+                                (String value) => DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    ))
+                            .toList(),
                       ),
                     ),
                   ),
@@ -398,22 +429,31 @@ class SeekerProfileState extends State<SeekerProfile> {
               ),
             ),
           ),
-          if (_hasUnsavedChanges)
-            Container(
-              width: screenWidth,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: _updateProfileData,
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: RegistrationForm.navyColor),
-                  child: Text(
-                    'Save Profile',
-                    style: btnTextStyle,
-                  ),
+          Container(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _hasUnsavedChanges
+                    ? () async {
+                        await _updateProfileData();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Profile updated successfully'),
+                          ),
+                        );
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: RegistrationForm.navyColor,
+                ),
+                child: Text(
+                  'Save Profile',
+                  style: btnTextStyle,
                 ),
               ),
             ),
+          ),
         ],
       ),
     );

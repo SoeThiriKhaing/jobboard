@@ -28,9 +28,7 @@ class AppliedJobsPage extends StatelessWidget {
             const Center(
               child: Text("Please log in to see your applied jobs"),
             ),
-            const SizedBox(
-              height: 30.0,
-            ),
+            const SizedBox(height: 30.0),
             Container(
               padding: const EdgeInsets.all(12.0),
               width: screenWidth,
@@ -44,9 +42,9 @@ class AppliedJobsPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: RegistrationForm.navyColor,
                 ),
-                child: Text(
+                child: const Text(
                   'Sign in',
-                  style: btnTextStyle,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
             ),
@@ -55,54 +53,29 @@ class AppliedJobsPage extends StatelessWidget {
       );
     }
 
-    return DefaultTabController(
-      length: 2, // Number of tabs
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text('Applied Jobs', style: appBarTextStyle),
-          backgroundColor: RegistrationForm.navyColor,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Pending'),
-              Tab(text: 'Accepted'),
-            ],
-            labelStyle: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-            unselectedLabelStyle: TextStyle(color: Colors.white),
-            indicatorColor: Colors.white,
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            _buildJobList(context, user.uid, 'pending'),
-            _buildJobList(context, user.uid, 'accepted'),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Applied Jobs', style: appBarTextStyle),
+        backgroundColor: RegistrationForm.navyColor,
       ),
+      body: _buildJobList(context, user.uid),
     );
   }
 
-  Widget _buildJobList(BuildContext context, String userId, String status) {
-    return StreamBuilder(
+  Widget _buildJobList(BuildContext context, String userId) {
+    return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('job_applications')
           .where('applicantId', isEqualTo: userId)
-          .where('status', isEqualTo: status) // Filter by status
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        snapshot.data!.docs.forEach((doc) {
-          print(doc.data());
-        });
-
-        var appliedJobs = snapshot.data!.docs
+        final appliedJobs = snapshot.data!.docs
             .map((doc) {
               final data = doc.data() as Map<String, dynamic>?;
-
               return data != null && data.containsKey('jobPostId')
                   ? data['jobPostId'] as String
                   : null;
@@ -116,7 +89,7 @@ class AppliedJobsPage extends StatelessWidget {
           );
         }
 
-        return StreamBuilder(
+        return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('job_posts')
               .where(FieldPath.documentId, whereIn: appliedJobs)

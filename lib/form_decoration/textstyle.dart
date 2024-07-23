@@ -17,7 +17,7 @@ TextStyle btnText = const TextStyle(
   color: Colors.black,
 );
 TextStyle titleTextStyle = const TextStyle(
-    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16);
+    fontWeight: FontWeight.bold, color: Colors.purple, fontSize: 16);
 
 TextStyle postTextStyle = const TextStyle(color: Colors.black);
 

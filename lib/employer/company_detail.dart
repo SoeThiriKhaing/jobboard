@@ -50,6 +50,22 @@ class CompanyDetail extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Background Image Section
+                    if (data['backgroundImageUrl'] != null)
+                      Container(
+                        width: double.infinity,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(data['backgroundImageUrl']),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 16.0),
+
+                    // Profile Image and Basic Info Section
                     Row(
                       children: [
                         data['profileImageUrl'] != null
@@ -67,9 +83,6 @@ class CompanyDetail extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                         const SizedBox(width: 16),
-                        SizedBox(
-                          height: 20,
-                        ),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,70 +99,45 @@ class CompanyDetail extends StatelessWidget {
                                     fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                               Text(
-                                data['websiteUrl'] ?? 'No Name',
+                                data['websiteUrl'] ?? 'No Website URL',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                data['industry'] ?? 'No Name',
+                                data['industry'] ?? 'No Industry',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                data['description'] ?? 'No Name',
+                                data['description'] ?? 'No Description',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               const SizedBox(height: 8),
+                              Text(
+                                data['location'] ?? 'No Location',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                data['size'] ?? 'No Size',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                data['foundingDate'] ?? 'No Founding Date',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.school, // Use any icon you prefer
-                          color: RegistrationForm.navyColor,
-                          size: 20, // Adjust size as needed
-                        ),
-                        const SizedBox(width: 8), // Space between icon and text
-                        Expanded(
-                          child: Text(
-                            '${data['education'] ?? 'No data'}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.code, // Use any icon you prefer
-                          color: RegistrationForm.navyColor,
-                          size: 20, // Adjust size as needed
-                        ),
-                        const SizedBox(width: 8), // Space between icon and text
-                        Expanded(
-                          child: Text(
-                            '${data['skills'] ?? 'No data'}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Text('Languages: ${data['languages'] ?? 'No data'}'),
-                    const SizedBox(height: 20),
-                    Text('Location: ${data['location'] ?? 'No data'}'),
-                    const SizedBox(height: 20),
-                    Text('Description: ${data['description'] ?? 'No data'}'),
                   ],
                 ),
               ),

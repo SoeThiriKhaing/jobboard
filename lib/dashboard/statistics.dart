@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,36 +13,31 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class StatisticsPageState extends State<StatisticsPage> {
-  // Function to get job applications stream based on employerId
+  String searchQuery = '';
+  bool _isExpanded = false;
+
   Stream<List<QueryDocumentSnapshot>> getJobApplicationsStream(
       String employerId) {
     final firestore = FirebaseFirestore.instance;
 
-    // Stream for job posts based on employerId
     final jobPostsStream = firestore
         .collection('job_posts')
         .where('employerId', isEqualTo: employerId)
         .snapshots();
 
-    // Transform job posts stream to job applications stream
     return jobPostsStream.asyncMap((jobPostsSnapshot) async {
-      final jobPostIds =
-          jobPostsSnapshot.docs.map((doc) => doc.id).toList(); // Use doc.id
+      final jobPostIds = jobPostsSnapshot.docs.map((doc) => doc.id).toList();
 
       if (jobPostIds.isEmpty) {
-        return <QueryDocumentSnapshot>[]; // Return an empty list if no job posts
+        return <QueryDocumentSnapshot>[];
       }
 
-      // Query job applications based on jobPostIds
       final jobApplicationsSnapshot = await firestore
-
-
           .collection('job_applications')
           .where('jobPostId', whereIn: jobPostIds)
           .get();
 
-      return jobApplicationsSnapshot
-          .docs; // Return the list of job application documents
+      return jobApplicationsSnapshot.docs;
     });
   }
 
@@ -54,41 +47,28 @@ class StatisticsPageState extends State<StatisticsPage> {
     final body =
         'Dear ${application['name']},\n\nYour job application has been accepted.\n\nBest regards,\nYour Company';
 
-    // Encode the subject and body to ensure proper URL formatting
     final encodedSubject = Uri.encodeComponent(subject);
     final encodedBody = Uri.encodeComponent(body);
     final emailUrl = 'mailto:$email?subject=$encodedSubject&body=$encodedBody';
 
-    print('Email URL: $emailUrl'); // Debug print
-
     try {
       if (await canLaunch(emailUrl)) {
-
-
         await launch(emailUrl);
-
-
       } else {
-        print('Could not launch URL: $emailUrl'); // Debug print
+        print('Could not launch URL: $emailUrl');
       }
     } catch (e) {
-      print('Exception occurred: $e'); // Debug print
+      print('Exception occurred: $e');
     }
-    
 
-    // Update the application status in Firestore
     await FirebaseFirestore.instance
-
-
         .collection('job_applications')
-        .doc(application['id']) // Ensure you have the document ID
+        .doc(application['id'])
         .update({'status': 'accepted'});
   }
 
   Future<void> _rejectApplication(String documentId) async {
     await FirebaseFirestore.instance
-
-
         .collection('job_applications')
         .doc(documentId)
         .update({'status': 'rejected'});
@@ -114,8 +94,6 @@ class StatisticsPageState extends State<StatisticsPage> {
               child: const Text('Yes'),
               onPressed: () async {
                 await _rejectApplication(documentId);
-
-
                 Navigator.of(context).pop();
               },
             ),
@@ -132,120 +110,191 @@ class StatisticsPageState extends State<StatisticsPage> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          'Statistics',
-          style: appBarTextStyle,
-        ),
-        backgroundColor: RegistrationForm.navyColor,
+        title: const Text('Statistics'),
+        backgroundColor: Colors.blueGrey,
       ),
-      body: StreamBuilder<List<QueryDocumentSnapshot>>(
-        stream: getJobApplicationsStream(user?.uid ?? ''),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          final jobApplications = snapshot.data ?? [];
-
-          if (jobApplications.isEmpty) {
-            return const Center(
-              child: Text("No job applications found"),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: jobApplications.length,
-            itemBuilder: (context, index) {
-              var application =
-                  jobApplications[index].data() as Map<String, dynamic>;
-              var documentId = jobApplications[index].id;
-
-              return Card(
-                elevation: 5,
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (application['profileImageUrl'] != null)
-                        ClipOval(
-                          child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: Image.network(
-                              application['profileImageUrl'],
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Applicant Name: ${application['name']}',
-                      ),
-                      const SizedBox(height: 20),
-                      Text('Email: ${application['email']}'),
-                      const SizedBox(height: 20),
-                      Text('Location: ${application['location']}'),
-                      const SizedBox(height: 20),
-                      Text('Education: ${application['education']}'),
-                      const SizedBox(height: 20),
-                      Text('Skills: ${application['skills']}'),
-                      const SizedBox(height: 20),
-                      Text('Languages: ${application['language']}'),
-                      const SizedBox(height: 20),
-                      Text('Cover Letter: ${application['coverLetter']}'),
-                      const SizedBox(height: 20),
-                      if (application['resumeUrl'] != null)
-                        ElevatedButton(
-                          onPressed: () async {
-                            final url = application['resumeUrl'];
-                            if (await canLaunch(url)) {
-
-
-                              await launch(url);
-
-
-                            } else {
-                              print('Could not launch $url');
-                            }
-                          },
-                          child: const Text('View Resume'),
-                        ),
-                      const SizedBox(height: 20),
-                      Text(
-                          'Application Date: ${application['applicationDate'].toDate()}'),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => _acceptApplication(application),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green),
-                            child: const Text('Accept'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () =>
-                                _showRejectConfirmationDialog(documentId),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red),
-                            child: const Text('Reject'),
-                          ),
-                        ],
-                      ),
-                    ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search by Job Title',
+                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        // Trigger search by updating searchQuery
+                      });
+                    },
+                    icon: const Icon(Icons.search),
+                    color: Colors.blueGrey,
                   ),
                 ),
-              );
-            },
-          );
-        },
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<QueryDocumentSnapshot>>(
+              stream: getJobApplicationsStream(user?.uid ?? ''),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                final jobApplications = snapshot.data ?? [];
+                final filteredApplications = jobApplications.where((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  final jobTitle = data['jobTitle']?.toLowerCase() ?? '';
+                  return jobTitle.contains(searchQuery);
+                }).toList();
+
+                if (filteredApplications.isEmpty) {
+                  return const Center(
+                    child: Text("No job applications found"),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: filteredApplications.length,
+                  itemBuilder: (context, index) {
+                    final application = filteredApplications[index].data()
+                        as Map<String, dynamic>;
+                    final documentId = filteredApplications[index].id;
+
+                    return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return Card(
+                          elevation: 5,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (application['jobTitle'] != null)
+                                  Text(
+                                    'Job Title: ${application['jobTitle']}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                const SizedBox(height: 10),
+                                if (application['profileImageUrl'] != null)
+                                  ClipOval(
+                                    child: SizedBox(
+                                      width: 100,
+                                      height: 100,
+                                      child: Image.network(
+                                        application['profileImageUrl'],
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(height: 20),
+                                Text('Applicant Name: ${application['name']}'),
+                                if (_isExpanded) ...[
+                                  const SizedBox(height: 20),
+                                  Text('Email: ${application['email']}'),
+                                  const SizedBox(height: 20),
+                                  Text('Location: ${application['location']}'),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                      'Education: ${application['education']}'),
+                                  const SizedBox(height: 20),
+                                  Text('Skills: ${application['skills']}'),
+                                  const SizedBox(height: 20),
+                                  Text('Languages: ${application['language']}'),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                      'Cover Letter: ${application['coverLetter']}'),
+                                  const SizedBox(height: 20),
+                                  if (application['resumeUrl'] != null)
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        final url = application['resumeUrl'];
+                                        if (await canLaunch(url)) {
+                                          await launch(url);
+                                        } else {
+                                          print('Could not launch $url');
+                                        }
+                                      },
+                                      child: const Text('View Resume'),
+                                    ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                      'Application Date: ${application['applicationDate'].toDate()}'),
+                                ],
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          _acceptApplication(application),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.green),
+                                      child: const Text('Accept'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          _showRejectConfirmationDialog(
+                                              documentId),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red),
+                                      child: const Text('Reject'),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isExpanded = !_isExpanded;
+                                    });
+                                  },
+                                  child: Text(
+                                      _isExpanded ? 'Show Less' : 'Show More'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
