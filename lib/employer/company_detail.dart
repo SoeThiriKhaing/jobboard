@@ -65,7 +65,7 @@ class CompanyDetail extends StatelessWidget {
 
                     const SizedBox(height: 16.0),
 
-                    // Profile Image and Basic Info Section
+                   
                     Row(
                       children: [
                         data['profileImageUrl'] != null

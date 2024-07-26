@@ -1,6 +1,6 @@
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/seeker/appliedjob.dart';
-import 'package:codehunt/seeker/save_job.dart';
+import 'package:codehunt/seeker/my_activity.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
 import 'package:codehunt/seeker/seeker_profile.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class SeekerMainpageState extends State<SeekerMainpage> {
     const SeekerHome(
       seekerEmail: 'Jobseeker',
     ),
-    const SavedJobsPage(),
+    const SavedJobPage(),
     const AppliedJobsPage(),
     const SeekerProfile(),
   ];
@@ -54,7 +54,7 @@ class SeekerMainpageState extends State<SeekerMainpage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            label: 'Saved Jobs',
+            label: 'My Activity',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),

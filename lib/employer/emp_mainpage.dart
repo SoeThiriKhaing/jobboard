@@ -1,9 +1,8 @@
-
+import 'package:codehunt/employer/emp_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/employer/emp_home.dart';
 import 'package:codehunt/employer/jobpostform.dart';
-import 'package:codehunt/employer/managepost.dart';
 import 'package:codehunt/employer/emp_profile.dart';
 
 class EmployerPage extends StatefulWidget {
@@ -25,7 +24,7 @@ class EmployerPageState extends State<EmployerPage> {
     _pages = <Widget>[
       EmployerHomePage(employerEmail: widget.employerEmail),
       JobPostForm(employerEmail: widget.employerEmail),
-      ManagePostsPage(employerEmail: widget.employerEmail),
+      EmpAlert(employerEmail: widget.employerEmail),
       EmployerProfile(employerEmail: widget.employerEmail),
     ];
   }
@@ -43,8 +42,10 @@ class EmployerPageState extends State<EmployerPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.post_add), label: 'Post Job'),
-          BottomNavigationBarItem(icon: Icon(Icons.manage_search), label: 'Manage Job Posts'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.post_add), label: 'Post Job'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notification_important), label: 'My Alerts'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,

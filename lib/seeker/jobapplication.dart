@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 class JobApplicationForm extends StatefulWidget {
   final String jobPostId;
   final String seekerEmail;
+  final String jobPostTitle;
 
   final Map<String, dynamic> jobPostData;
 
@@ -21,6 +22,7 @@ class JobApplicationForm extends StatefulWidget {
     required this.jobPostData,
     required this.seekerEmail,
     required String employerEmail,
+    required this.jobPostTitle,
   });
 
   @override
@@ -35,6 +37,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   final TextEditingController _educationController = TextEditingController();
   final TextEditingController _skillController = TextEditingController();
   final TextEditingController _languagesController = TextEditingController();
+  final TextEditingController _jobtitleController = TextEditingController();
 
   PlatformFile? _resumeFile;
   PlatformFile? _coverLetterFile;
@@ -72,6 +75,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           _educationController.text = data['education'] ?? '';
           _skillController.text = data['skills'] ?? '';
           _languagesController.text = data['languages'] ?? '';
+          _jobtitleController.text = data['title'] ?? '';
         });
       }
     } catch (e) {
@@ -163,8 +167,24 @@ class JobApplicationFormState extends State<JobApplicationForm> {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        // Fetch the job post title
+        final jobPostDoc = await FirebaseFirestore.instance
+            .collection('job_posts')
+            .doc(jobPostId)
+            .get();
+
+        if (!jobPostDoc.exists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Job post not found.')),
+          );
+          return;
+        }
+
+        final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
+
         final applicationData = {
           'jobPostId': jobPostId,
+          'jobPostTitle': jobPostTitle,
           'applicantId': user.uid,
           'name': _nameController.text,
           'email': _emailController.text,
@@ -191,10 +211,11 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           return;
         }
 
-        final subject = 'Job Application for ${widget.jobPostData['title']}';
+        final subject = 'Job Application for $jobPostTitle'; // Use jobPostTitle
         final body = '''
       Name: ${_nameController.text}
       Email: ${_emailController.text}
+      JobTitle:${_jobtitleController.text}
       Location: ${_locationController.text}
       Education: ${_educationController.text}
       Skills: ${_skillController.text}
@@ -205,26 +226,16 @@ class JobApplicationFormState extends State<JobApplicationForm> {
       Application Date: ${DateTime.now()}
       ''';
 
-        final mailtoUrl = Uri(
+        // Use url_launcher to open email client with prefilled email
+        final uri = Uri(
           scheme: 'mailto',
-          path: widget.jobPostData['postedBy'] ?? '',
-          query: Uri.encodeComponent('subject=$subject&body=$body'),
-        ).toString();
-
-        // Launch email client
-        try {
-          if (await canLaunch(mailtoUrl)) {
-            await launch(mailtoUrl);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not launch email client.')),
-            );
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
+          path: employerEmail,
+          queryParameters: {
+            'subject': subject,
+            'body': body,
+          },
+        );
+        await launchUrl(uri);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Application submitted successfully!')),
@@ -236,10 +247,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           const SnackBar(content: Text('You need to be signed in to apply.')),
         );
       }
-      // } else if (_alreadyApplied) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text('You have already applied for this job.')),
-      //   );
     } else if (_resumeFile == null || _coverLetterFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

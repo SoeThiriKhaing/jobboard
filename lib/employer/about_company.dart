@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/seeker/jobapplication.dart';
@@ -313,6 +312,7 @@ class AboutCompanyState extends State<AboutCompany> {
                       jobPostData: widget.jobPostData,
                       seekerEmail: widget.seekerEmail,
                       employerEmail: widget.employerEmail,
+                      jobPostTitle: jobPostData['title'],
                     ),
                   ),
                 );

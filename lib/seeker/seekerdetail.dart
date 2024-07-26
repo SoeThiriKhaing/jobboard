@@ -7,20 +7,32 @@ import 'package:url_launcher/url_launcher.dart';
 class SeekerDetailPage extends StatelessWidget {
   final String seekerId;
 
-  const SeekerDetailPage({super.key, required this.seekerId});
+  const SeekerDetailPage(
+      {super.key,
+      required this.seekerId,
+      required Map<String, dynamic> seekerData});
 
   Future<void> _apply(String email) async {
     final Uri emailUri = Uri(
+      
       scheme: 'mailto',
       path: email,
-      query:
-          'subject=${Uri.encodeComponent('Hello Seeker')}&body=${Uri.encodeComponent('I read your job profile and I would like to discuss further.')}',
+      queryParameters: {
+        'subject': 'Hello Seeker',
+      },
     );
 
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    } else {
-      throw 'Could not launch $emailUri';
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri, mode: LaunchMode.platformDefault);
+      } else {
+        throw 'Could not launch $emailUri';
+      }
+    } catch (e) {
+      print('Email URI: $emailUri');
+      print('Scheme: ${emailUri.scheme}');
+      print('Path: ${emailUri.path}');
+      print('Query: ${emailUri.query}');
     }
   }
 
@@ -76,7 +88,7 @@ class SeekerDetailPage extends StatelessWidget {
                               ),
                             const SizedBox(height: 16),
                             Text(
-                              data['fullName'] ?? 'No Name',
+                              data['fullName'] ?? 'No data',
                               style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
@@ -125,19 +137,42 @@ class SeekerDetailPage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    final email = data['email'] ?? '';
-                    _apply(email);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: RegistrationForm.navyColor, // Button color
-                    minimumSize: const Size(double.infinity, 50), // Full width
-                  ),
-                  child: Text(
-                    'Apply',
-                    style: btnTextStyle,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Pop the current route
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              const Size(double.infinity, 50), // Full width
+                        ),
+                        child: Text(
+                          'Cancel',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final email = data['email'] ?? '';
+                          _apply(email);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              RegistrationForm.navyColor, // Button color
+                          minimumSize:
+                              const Size(double.infinity, 50), // Full width
+                        ),
+                        child: Text(
+                          'Invite',
+                          style: btnTextStyle,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

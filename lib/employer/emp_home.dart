@@ -1,194 +1,8 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:codehunt/auth/register.dart';
-// import 'package:codehunt/employer/managepost.dart';
-// import 'package:codehunt/dashboard/statistics.dart';
-// import 'package:codehunt/form_decoration/textstyle.dart';
-
-// class EmployerHomePage extends StatefulWidget {
-//   final String employerEmail;
-
-//   const EmployerHomePage({super.key, required this.employerEmail});
-
-//   @override
-//   EmployerHomePageState createState() => EmployerHomePageState();
-// }
-
-// class EmployerHomePageState extends State<EmployerHomePage> {
-//   late Future<int> _totalJobPostsFuture;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _totalJobPostsFuture = _fetchTotalJobPosts();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         automaticallyImplyLeading: false,
-//         title: Text(
-//           'Employer Dashboard',
-//           style: appBarTextStyle,
-//         ),
-//         backgroundColor: RegistrationForm.navyColor,
-//       ),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: FutureBuilder<int>(
-//             future: _totalJobPostsFuture,
-//             builder: (context, snapshot) {
-//               if (snapshot.connectionState == ConnectionState.waiting) {
-//                 return const Center(child: CircularProgressIndicator());
-//               }
-//               if (snapshot.hasError) {
-//                 return Center(child: Text('Error: ${snapshot.error}'));
-//               }
-//               final totalJobPosts = snapshot.data ?? 0;
-//               return GridView.count(
-//                 shrinkWrap: true,
-//                 physics: const NeverScrollableScrollPhysics(),
-//                 crossAxisCount: 2,
-//                 crossAxisSpacing: 16.0,
-//                 mainAxisSpacing: 16.0,
-//                 childAspectRatio: 3 / 2,
-//                 children: [
-//                   _buildJobPostCard(context, totalJobPosts),
-//                   _buildStatisticsCard(context),
-//                 ],
-//               );
-//             },
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildJobPostCard(BuildContext context, int totalJobPosts) {
-//     return InkWell(
-//       onTap: () {
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) =>
-//                 ManagePostsPage(employerEmail: widget.employerEmail),
-//           ),
-//         );
-//       },
-//       child: Card(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(12.0),
-//         ),
-//         elevation: 5,
-//         child: Container(
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [Colors.yellow.shade700, Colors.yellow.shade400],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//             borderRadius: BorderRadius.circular(12.0),
-//           ),
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               const SizedBox(height: 10),
-//               Center(
-//                 child: Text('Total job posts: $totalJobPosts',
-//                     style: const TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 16,
-//                         fontWeight: FontWeight.bold)),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildStatisticsCard(BuildContext context) {
-//     return InkWell(
-//       onTap: () {
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) =>
-//                 StatisticsPage(employerEmail: widget.employerEmail),
-//           ),
-//         );
-//       },
-//       child: Card(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(12.0),
-//         ),
-//         elevation: 5,
-//         child: Container(
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [Colors.green.shade700, Colors.green.shade400],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//             borderRadius: BorderRadius.circular(12.0),
-//           ),
-//           padding: const EdgeInsets.all(16.0),
-//           child: const Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Center(
-//                 child: Text('View application and hiring statistics',
-//                     style: TextStyle(
-//                         color: Colors.white,
-//                         fontWeight: FontWeight.bold,
-//                         fontSize: 14)),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Future<int> _fetchTotalJobPosts({int retryCount = 5}) async {
-//     final user = FirebaseAuth.instance.currentUser;
-//     int attempt = 0;
-//     while (attempt < retryCount) {
-//       try {
-//         final querySnapshot = await FirebaseFirestore.instance
-//             .collection('job_posts')
-//             .where('jobPostId', isEqualTo: user?.uid)
-//             .where('postedBy', isEqualTo: widget.employerEmail)
-//             .get();
-//         return querySnapshot.size;
-//       } on FirebaseException catch (e) {
-//         if (e.code == 'unavailable') {
-//           attempt++;
-//           final backoffDelay = Duration(seconds: 2 * attempt);
-//           await Future.delayed(backoffDelay);
-//         } else {
-//           rethrow;
-//         }
-//       }
-//     }
-//     throw FirebaseException(
-//       plugin: 'cloud_firestore',
-//       code: 'unavailable',
-//       message: 'The service is currently unavailable after multiple retries.',
-//     );
-//   }
-// }
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codehunt/auth/login.dart';
-import 'package:codehunt/auth/register.dart';
-import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:codehunt/seeker/seekerdetail.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:codehunt/seeker/seekerdetail.dart';
+import 'package:codehunt/form_decoration/textstyle.dart';
+import 'package:codehunt/auth/register.dart';
 
 class EmployerHomePage extends StatefulWidget {
   final String employerEmail;
@@ -202,11 +16,13 @@ class EmployerHomePage extends StatefulWidget {
 class EmployerHomePageState extends State<EmployerHomePage> {
   String searchQuery = '';
   late Future<List<DocumentSnapshot>> _seekersFuture;
+  final Set<String> savedSeekers = {};
 
   @override
   void initState() {
     super.initState();
     _seekersFuture = _fetchSeekers();
+    _loadSavedSeekers();
   }
 
   Future<List<DocumentSnapshot>> _fetchSeekers() async {
@@ -214,12 +30,56 @@ class EmployerHomePageState extends State<EmployerHomePage> {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('role', isEqualTo: 'Jobseeker')
-          .where('visibility', isEqualTo: 'Public') // Filter by role
+          .where('visibility', isEqualTo: 'Public')
           .get();
       return querySnapshot.docs;
     } catch (e) {
       print("Error fetching seekers: $e");
       return [];
+    }
+  }
+
+  Future<void> _loadSavedSeekers() async {
+    try {
+      final savedSeekersSnapshot = await FirebaseFirestore.instance
+          .collection('employers')
+          .doc(widget.employerEmail)
+          .collection('savedSeekers')
+          .get();
+      setState(() {
+        savedSeekers.addAll(savedSeekersSnapshot.docs.map((doc) => doc.id));
+      });
+    } catch (e) {
+      print("Error loading saved seekers: $e");
+    }
+  }
+
+  Future<void> _toggleSaveSeeker(String seekerId) async {
+    final isSaved = savedSeekers.contains(seekerId);
+    try {
+      if (isSaved) {
+        await FirebaseFirestore.instance
+            .collection('employers')
+            .doc(widget.employerEmail)
+            .collection('savedSeekers')
+            .doc(seekerId)
+            .delete();
+        setState(() {
+          savedSeekers.remove(seekerId);
+        });
+      } else {
+        await FirebaseFirestore.instance
+            .collection('employers')
+            .doc(widget.employerEmail)
+            .collection('savedSeekers')
+            .doc(seekerId)
+            .set({});
+        setState(() {
+          savedSeekers.add(seekerId);
+        });
+      }
+    } catch (e) {
+      print("Error saving seeker: $e");
     }
   }
 
@@ -256,24 +116,21 @@ class EmployerHomePageState extends State<EmployerHomePage> {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                    hintText: 'Search by Seeker name or skill',
-                    hintStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 15),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 20),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          // Refresh the seekers list based on the search query
-                          _seekersFuture = _fetchSeekers();
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.search,
-                      ),
-                      color: RegistrationForm.navyColor,
-                    )),
+                  hintText: 'Search by Seeker name or skill',
+                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 20),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _seekersFuture = _fetchSeekers();
+                      });
+                    },
+                    icon: const Icon(Icons.search),
+                    color: RegistrationForm.navyColor,
+                  ),
+                ),
                 onChanged: (value) {
                   setState(() {
                     searchQuery = value.toLowerCase();
@@ -298,7 +155,6 @@ class EmployerHomePageState extends State<EmployerHomePage> {
                   final data = doc.data() as Map<String, dynamic>?;
                   final name =
                       data?['fullName']?.toString().toLowerCase() ?? '';
-
                   final skill = data?['skills']?.toString().toLowerCase() ?? '';
                   return name.contains(searchQuery) ||
                       skill.contains(searchQuery);
@@ -307,10 +163,12 @@ class EmployerHomePageState extends State<EmployerHomePage> {
                 return ListView(
                   children: filteredSeekers.map((doc) {
                     final data = doc.data() as Map<String, dynamic>?;
+                    final seekerId = doc.id;
+                    final isSaved = savedSeekers.contains(seekerId);
 
                     return Card(
                       color: Colors.white,
-                      elevation: 3,
+                      elevation: 5,
                       margin: const EdgeInsets.symmetric(
                           vertical: 6.0, horizontal: 14.0),
                       child: ListTile(
@@ -319,50 +177,75 @@ class EmployerHomePageState extends State<EmployerHomePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => SeekerDetailPage(
-                                seekerId: doc
-                                    .id, // Pass the document ID to the detail page
+                                seekerId: seekerId,
+                                seekerData: data ?? {},
                               ),
                             ),
                           );
                         },
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        contentPadding: const EdgeInsets.all(16),
+                        title: Row(
                           children: [
                             if (data?['profileImageUrl'] != null)
-                              ClipOval(
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
                                 child: Image.network(
                                   data!['profileImageUrl'],
-                                  width: 60,
-                                  height: 60,
+                                  width: 100,
+                                  height: 100,
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                            const SizedBox(height: 10),
-                            Text(
-                              data?['fullName'] ?? 'No data',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data?['fullName'] ?? 'No data',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.code),
+                                      Expanded(
+                                        child: Text(
+                                          ' ${data?['skills'] ?? 'No data'}',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on),
+                                      Expanded(
+                                        child: Text(
+                                          ' ${data?['location'] ?? 'No data'}',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            Row(children: [
-                              const Icon(Icons.code),
-                              Expanded(
-                                  child:
-                                      Text(' ${data?['skills'] ?? 'No data'}'))
-                            ]),
-                            const SizedBox(height: 10),
-                            Row(children: [
-                              const Icon(Icons.location_on),
-                              Expanded(
-                                  child: Text(
-                                      ' ${data?['location'] ?? 'No data'}'))
-                            ]),
-                            const SizedBox(height: 14),
+                            IconButton(
+                              icon: Icon(
+                                isSaved ? Icons.star : Icons.star_border,
+                                color: isSaved ? Colors.blue : Colors.grey,
+                              ),
+                              onPressed: () {
+                                _toggleSaveSeeker(seekerId);
+                              },
+                            ),
                           ],
                         ),
-                        contentPadding: const EdgeInsets.all(16),
                       ),
                     );
                   }).toList(),

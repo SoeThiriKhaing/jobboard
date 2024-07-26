@@ -1,4 +1,3 @@
-import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/seeker/seeker_mainpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:codehunt/auth/login.dart';
 import 'package:codehunt/auth/register.dart';
+import 'package:codehunt/employer/managepost.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:codehunt/utils/validation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,8 @@ class JobPostForm extends StatefulWidget {
   JobPostFormState createState() => JobPostFormState();
 }
 
-class JobPostFormState extends State<JobPostForm> {
+class JobPostFormState extends State<JobPostForm>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _companyController = TextEditingController();
@@ -34,7 +36,16 @@ class JobPostFormState extends State<JobPostForm> {
   final TextEditingController _endingDateController = TextEditingController();
   String? _salaryType;
   String? _jobType;
+  String? _jobTitle;
   File? _companyLogo;
+
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   Future<String?> _postJob() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -56,7 +67,7 @@ class JobPostFormState extends State<JobPostForm> {
         await jobPostRef.set({
           'employerId': user?.uid,
           'jobPostId': jobPostId,
-          'title': _titleController.text,
+          'title': _jobTitle,
           'company': _companyController.text,
           'salaryRange': _salaryRangeController.text,
           'salaryType': _salaryType,
@@ -97,6 +108,7 @@ class JobPostFormState extends State<JobPostForm> {
     setState(() {
       _salaryType = null;
       _jobType = null;
+      _jobTitle = null;
       _companyLogo = null;
     });
   }
@@ -183,81 +195,164 @@ class JobPostFormState extends State<JobPostForm> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('Post a Job', style: appBarTextStyle),
-        backgroundColor: RegistrationForm.navyColor,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: _inputDecoration.copyWith(labelText: 'Job Title'),
-                validator: validateTextField,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Manage Posts', style: appBarTextStyle),
+          backgroundColor: RegistrationForm.navyColor,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48.0),
+            child: Container(
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Post a Job'),
+                  Tab(text: 'Manage Job Post'),
+                ],
               ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _companyController,
-                decoration:
-                    _inputDecoration.copyWith(labelText: 'Company Name'),
-                validator: validateTextField,
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _salaryRangeController,
-                      decoration:
-                          _inputDecoration.copyWith(labelText: 'Salary Range'),
-                      validator: validateTextField,
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _salaryType,
-                      items: ['Annual', 'Monthly', 'Weekly', 'Hourly']
+            ),
+          ),
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // Post a Job Tab
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: _jobTitle,
+                      items: [
+                        'Software Engineer',
+                        'Web Developer',
+                        'Systems Analyst',
+                        'Network Administrator',
+                        'Database Administrator',
+                        'IT Support Specialist',
+                        'Cybersecurity Analyst',
+                        'DevOps Engineer',
+                        'Front-End Developer',
+                        'Back-End Developer',
+                        'Full Stack Developer',
+                        'Cloud Engineer',
+                        'IT Project Manager',
+                        'Technical Support Engineer',
+                        'Data Scientist',
+                        'Machine Learning Engineer',
+                        'Business Intelligence Analyst',
+                        'Systems Engineer',
+                        'QA Engineer (Quality Assurance)',
+                        'UX/UI Designer'
+                      ]
                           .map((label) => DropdownMenuItem(
                                 value: label,
                                 child: Text(label),
                               ))
                           .toList(),
-                      hint: const Text('Salary Type'),
+                      hint: const Text('Select Job Title'),
                       onChanged: (value) {
                         setState(() {
-                          _salaryType = value;
+                          _jobTitle = value;
                         });
                       },
                       decoration: _inputDecoration,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please select a salary type';
+                          return 'Please select a job title';
                         }
                         return null;
                       },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _companyController,
+                      decoration:
+                          _inputDecoration.copyWith(labelText: 'Company Name'),
+                      validator: validateTextField,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _salaryRangeController,
+                            decoration: _inputDecoration.copyWith(
+                                labelText: 'Salary Range'),
+                            validator: validateTextField,
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _salaryType,
+                            items: ['Annual', 'Monthly', 'Weekly', 'Hourly']
+                                .map((label) => DropdownMenuItem(
+                                      value: label,
+                                      child: Text(label),
+                                    ))
+                                .toList(),
+                            hint: const Text('Salary Type'),
+                            onChanged: (value) {
+                              setState(() {
+                                _salaryType = value;
+                              });
+                            },
+                            decoration: _inputDecoration,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a salary type';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration:
+                          _inputDecoration.copyWith(labelText: 'Description'),
+                      validator: validateTextField,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _locationController,
+                      decoration:
+                          _inputDecoration.copyWith(labelText: 'Location'),
+                      validator: validateTextField,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _experienceController,
+                      decoration: _inputDecoration.copyWith(
+                          labelText: 'Experience Level'),
+                      validator: validateTextField,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _skillsController,
+                      decoration: _inputDecoration.copyWith(
+                          labelText: 'Required Skills'),
+                      validator: validateTextField,
+                    ),
+                    const SizedBox(height: 16.0),
+                    DropdownButtonFormField<String>(
                       value: _jobType,
-                      items: ['Full Time', 'Part Time', 'Remote']
+                      items: ['Full-Time', 'Part-Time', 'Remote']
                           .map((label) => DropdownMenuItem(
                                 value: label,
                                 child: Text(label),
                               ))
                           .toList(),
-                      hint: const Text('Job Type'),
+                      hint: const Text('Select Job Type'),
                       onChanged: (value) {
                         setState(() {
                           _jobType = value;
@@ -271,103 +366,77 @@ class JobPostFormState extends State<JobPostForm> {
                         return null;
                       },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
+                    const SizedBox(height: 16.0),
+                    TextFormField(
                       controller: _postingDateController,
-                      decoration: _inputDecoration.copyWith(
-                        labelText: 'Posting Date',
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      validator: validateTextField,
                       readOnly: true,
-                      onTap: () => _selectDate(context, _postingDateController),
+                      decoration: _inputDecoration.copyWith(
+                          labelText: 'Posting Date',
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _postingDateController),
+                          )),
+                      validator: validateTextField,
                     ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: TextFormField(
+                    const SizedBox(height: 16.0),
+                    TextFormField(
                       controller: _endingDateController,
-                      decoration: _inputDecoration.copyWith(
-                        labelText: 'Ending Date',
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      validator: validateTextField,
                       readOnly: true,
-                      onTap: () => _selectDate(context, _endingDateController),
+                      decoration: _inputDecoration.copyWith(
+                          labelText: 'Ending Date',
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _endingDateController),
+                          )),
+                      validator: validateTextField,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: _inputDecoration.copyWith(labelText: 'Description'),
-                validator: validateTextField,
-                maxLines: 5,
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _locationController,
-                decoration: _inputDecoration.copyWith(labelText: 'Location'),
-                validator: validateTextField,
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _experienceController,
-                decoration:
-                    _inputDecoration.copyWith(labelText: 'Experience Level'),
-                validator: validateTextField,
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _skillsController,
-                decoration: _inputDecoration.copyWith(labelText: 'Skills'),
-                validator: validateTextField,
-              ),
-              const SizedBox(height: 16.0),
-              Column(
-                children: [
-                  Container(
-                    width: screenWidth,
-                    child: ElevatedButton(
-                      onPressed: _selectCompanyLogo,
-                      child: const Text(
-                        'Select Company Logo',
-                        style: TextStyle(color: RegistrationForm.navyColor),
-                      ),
-                    ),
-                  ),
-                  if (_companyLogo != null)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.file(
+                    const SizedBox(height: 16.0),
+                    if (_companyLogo != null)
+                      Image.file(
                         _companyLogo!,
                         height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    TextButton(
+                      onPressed: _selectCompanyLogo,
+                      child: const Text('Select Company Logo'),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Container(
+                      width: screenWidth,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final jobPostId = await _postJob();
+                          if (jobPostId != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Job Post added successfully"),
+                                // Text('Job post added with ID: $jobPostId'),
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: RegistrationForm.navyColor,
+                        ),
+                        child: Text(
+                          'Post Job',
+                          style: btnTextStyle,
+                        ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Container(
-                width: screenWidth,
-                child: ElevatedButton(
-                  onPressed: _postJob,
-                  child: Text(
-                    'Post Job',
-                    style: btnTextStyle,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: RegistrationForm.navyColor),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // Manage Job Post Tab
+            ManagePostsPage(
+              employerEmail: widget.employerEmail,
+            ),
+          ],
         ),
       ),
     );

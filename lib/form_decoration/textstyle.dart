@@ -17,7 +17,7 @@ TextStyle btnText = const TextStyle(
   color: Colors.black,
 );
 TextStyle titleTextStyle = const TextStyle(
-    fontWeight: FontWeight.bold, color: Colors.purple, fontSize: 16);
+    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16);
 
 TextStyle postTextStyle = const TextStyle(color: Colors.black);
 
@@ -25,3 +25,5 @@ TextStyle dashTextStyle =
     const TextStyle(color: RegistrationForm.navyColor, fontSize: 12);
 TextStyle dashTitleStyle = const TextStyle(
     color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18);
+
+TextStyle iconColor = const TextStyle(color: Colors.grey);

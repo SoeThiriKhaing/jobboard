@@ -17,7 +17,7 @@ class SeekerHome extends StatefulWidget {
 
 class SeekerHomeState extends State<SeekerHome> {
   String searchQuery = '';
-  Set<String> savedJobIds = Set<String>(); // Track saved jobs
+  Set<String> savedJobIds = <String>{}; // Track saved jobs
 
   @override
   void initState() {
@@ -192,6 +192,7 @@ class SeekerHomeState extends State<SeekerHome> {
                         }
                       },
                       child: Card(
+                        elevation:3,
                         color: Colors.white,
                         margin: const EdgeInsets.symmetric(
                             vertical: 6.0, horizontal: 14.0),
@@ -257,17 +258,19 @@ class SeekerHomeState extends State<SeekerHome> {
                                       style: postTextStyle),
                                 ],
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  const Icon(Icons.calendar_today,
-                                      color: Colors.grey),
+                                  const Icon(
+                                    Icons.calendar_today,
+                                    color: Colors.grey,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text('${jobPostData?['postingDate']}',
                                       style: postTextStyle),
                                 ],
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
                                   const Icon(Icons.location_on,
