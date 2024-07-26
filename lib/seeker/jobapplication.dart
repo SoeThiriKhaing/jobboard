@@ -37,6 +37,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   final TextEditingController _educationController = TextEditingController();
   final TextEditingController _skillController = TextEditingController();
   final TextEditingController _languagesController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _jobtitleController = TextEditingController();
 
   PlatformFile? _resumeFile;
@@ -75,6 +76,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           _educationController.text = data['education'] ?? '';
           _skillController.text = data['skills'] ?? '';
           _languagesController.text = data['languages'] ?? '';
+          _descriptionController.text = data['description'] ?? '';
           _jobtitleController.text = data['title'] ?? '';
         });
       }
@@ -167,7 +169,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // Fetch the job post title
         final jobPostDoc = await FirebaseFirestore.instance
             .collection('job_posts')
             .doc(jobPostId)
@@ -180,7 +181,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           return;
         }
 
-         final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
+        final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
 
         final applicationData = {
           'jobPostId': jobPostId,
@@ -192,6 +193,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           'education': _educationController.text,
           'skill': _skillController.text,
           'language': _languagesController.text,
+          'description': _descriptionController.text,
           'coverLetter': _coverLetter,
           'applicationDate': Timestamp.now(),
           'profileImageUrl': _profileImageUrl,
@@ -220,6 +222,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
       Education: ${_educationController.text}
       Skills: ${_skillController.text}
       Languages: ${_languagesController.text}
+      Description: ${_descriptionController.text}
       Cover Letter: ${_coverLetter}
       Resume: ${_resumeUrl}
       Profile Image: ${_profileImageUrl}
@@ -311,6 +314,8 @@ class JobApplicationFormState extends State<JobApplicationForm> {
                   _buildTextFormField(_skillController, 'Skills'),
                   const SizedBox(height: 20),
                   _buildTextFormField(_languagesController, 'Languages'),
+                  const SizedBox(height: 20),
+                  _buildTextFormField(_descriptionController, 'Description'),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: screenWidth,
