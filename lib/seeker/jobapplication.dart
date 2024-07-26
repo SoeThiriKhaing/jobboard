@@ -180,7 +180,7 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           return;
         }
 
-        final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
+         final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
 
         final applicationData = {
           'jobPostId': jobPostId,

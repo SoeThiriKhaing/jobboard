@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:codehunt/employer/job_app_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
@@ -53,30 +54,41 @@ class EmpAlertState extends State<EmpAlert>
 
   void _fetchSeekersData() {
     setState(() {
-      _allSeekersFuture = _fetchSeekers();
+      _allSeekersFuture = _fetchAllSeekers();
       _acceptedSeekersFuture = _fetchSeekersByStatus('Accepted');
       _rejectedSeekersFuture = _fetchSeekersByStatus('Rejected');
     });
   }
 
-  Future<List<DocumentSnapshot>> _fetchSeekers() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
+  Future<List<DocumentSnapshot>> _fetchAllSeekers() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
       return [];
     }
     try {
       final jobPostsSnapshot = await FirebaseFirestore.instance
           .collection('job_posts')
-          .where('employerId', isEqualTo: currentUser.uid)
+          .where('employerId', isEqualTo: user.uid)
           .get();
       final jobPostIds = jobPostsSnapshot.docs.map((doc) => doc.id).toList();
+
       final seekersSnapshot = await FirebaseFirestore.instance
           .collection('job_applications')
           .where('jobPostId', whereIn: jobPostIds)
           .get();
-      return seekersSnapshot.docs;
+
+      final savedSeekersSnapshot = await FirebaseFirestore.instance
+          .collection('savedSeekers')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      final allSeekers = [
+        ...seekersSnapshot.docs,
+        ...savedSeekersSnapshot.docs
+      ];
+      return allSeekers;
     } catch (e) {
-      print("Error fetching seekers: $e");
+      print("Error fetching all seekers: $e");
       return [];
     }
   }
@@ -95,7 +107,6 @@ class EmpAlertState extends State<EmpAlert>
       final seekersSnapshot = await FirebaseFirestore.instance
           .collection('job_applications')
           .where('jobPostId', whereIn: jobPostIds)
-          .where('submittedBy', isEqualTo: currentUser.email)
           .where('status', isEqualTo: status)
           .get();
       return seekersSnapshot.docs;
@@ -111,7 +122,7 @@ class EmpAlertState extends State<EmpAlert>
           .collection('job_applications')
           .doc(applicationId)
           .update({'status': status});
-      _fetchSeekersData();
+      _fetchSeekersData(); // Refresh the data for all tabs
       // Update tabController index
       if (status == 'Accepted') {
         _tabController.animateTo(1);
@@ -121,62 +132,6 @@ class EmpAlertState extends State<EmpAlert>
     } catch (e) {
       print("Error updating status: $e");
     }
-  }
-
-  Future<void> _showJobApplicationForm(BuildContext context,
-      Map<String, dynamic>? data, String applicationId) async {
-    // Fetch the application data
-    final applicationData = await FirebaseFirestore.instance
-        .collection('job_applications')
-        .doc(applicationId)
-        .get();
-
-    final application = applicationData.data();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Job Application Details'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (application?['profileImageUrl'] != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.network(
-                      application!['profileImageUrl'],
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                Text('Name: ${application?['name'] ?? 'No data'}'),
-                Text('Education: ${application?['education'] ?? 'No data'}'),
-                Text('Skills: ${application?['skill'] ?? 'No data'}'),
-                Text('Location: ${application?['location'] ?? 'No data'}'),
-                const SizedBox(height: 10),
-                Text('Cover Letter:'),
-                Text(application?['coverLetter'] ?? 'No data'),
-                const SizedBox(height: 10),
-                Text('Resume:'),
-                Text(application?['resume'] ?? 'No data'),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -288,55 +243,62 @@ class EmpAlertState extends State<EmpAlert>
                         borderRadius: BorderRadius.circular(50),
                         child: Image.network(
                           data!['profileImageUrl'],
-                          width: 100,
-                          height: 100,
+                          width: 50,
+                          height: 50,
                           fit: BoxFit.cover,
                         ),
                       ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Name: ${data?['name'] ?? 'No data'}'),
+                          Text(data?['name'] ?? 'No name'),
                           Text('Education: ${data?['education'] ?? 'No data'}'),
                           Text('Skills: ${data?['skill'] ?? 'No data'}'),
                           Text('Location: ${data?['location'] ?? 'No data'}'),
-                          const SizedBox(height: 8),
-                          Text(
-                              'Cover Letter: ${data?['coverLetter'] ?? 'No data'}'),
-                          Text('Resume: ${data?['resume'] ?? 'No data'}'),
                         ],
                       ),
                     ),
                   ],
                 ),
-                onTap: () =>
-                    _showJobApplicationForm(context, data, applicationId),
                 trailing: PopupMenuButton<String>(
                   onSelected: (value) {
-                    if (value == 'Accepted') {
-                      _updateStatus(applicationId, 'Accepted');
-                    } else if (value == 'Rejected') {
-                      _updateStatus(applicationId, 'Rejected');
-                    }
+                    _updateStatus(applicationId, value);
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem<String>(
+                    const PopupMenuItem(
                       value: 'Accepted',
                       child: Text('Accept'),
                     ),
-                    const PopupMenuItem<String>(
+                    const PopupMenuItem(
                       value: 'Rejected',
                       child: Text('Reject'),
                     ),
                   ],
                 ),
+                onTap: () {
+                  _navigateToJobAppDetail(context, data, applicationId);
+                },
               ),
             );
           }).toList(),
         );
       },
+    );
+  }
+
+  void _navigateToJobAppDetail(
+      BuildContext context, Map<String, dynamic>? data, String applicationId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => JobAppDetail(
+          seekerId: applicationId,
+          applicantId: data?['applicantId'] ?? '',
+          applicationId: applicationId,
+        ),
+      ),
     );
   }
 }

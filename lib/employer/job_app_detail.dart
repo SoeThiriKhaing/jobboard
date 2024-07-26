@@ -1,24 +1,27 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class SeekerDetailPage extends StatelessWidget {
+class JobAppDetail extends StatelessWidget {
   final String seekerId;
+  final String applicantId;
+  final String applicationId;
 
-  const SeekerDetailPage(
-      {super.key,
-      required this.seekerId,
-      required Map<String, dynamic> seekerData});
+  const JobAppDetail({
+    Key? key,
+    required this.seekerId,
+    required this.applicantId,
+    required this.applicationId,
+  }) : super(key: key);
 
-  Future<void> _apply(String email) async {
+  Future<void> _invite(String email) async {
     final Uri emailUri = Uri(
-      
       scheme: 'mailto',
       path: email,
       queryParameters: {
-        'subject': 'HelloSeeker',
+        'subject': 'Job Application Invitation',
       },
     );
 
@@ -40,16 +43,18 @@ class SeekerDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: RegistrationForm.navyColor,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          'Seeker Details',
+          'Job Application Details',
           style: appBarTextStyle,
         ),
-        backgroundColor: RegistrationForm.navyColor,
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('users').doc(seekerId).get(),
+        future: FirebaseFirestore.instance
+            .collection('job_applications')
+            .doc(applicationId)
+            .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -57,12 +62,11 @@ class SeekerDetailPage extends StatelessWidget {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-
-          final data = snapshot.data?.data() as Map<String, dynamic>?;
-
-          if (data == null) {
-            return const Center(child: Text('No data available'));
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text('No data found.'));
           }
+
+          final data = snapshot.data!.data() as Map<String, dynamic>;
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,44 +76,49 @@ class SeekerDetailPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 6.0, horizontal: 14.0),
                       color: Colors.white,
                       elevation: 3,
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (data['profileImageUrl'] != null)
-                              Image.network(
-                                data['profileImageUrl'],
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(
+                                  data['profileImageUrl'],
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             const SizedBox(height: 16),
                             Text(
-                              data['fullName'] ?? 'No data',
+                              'Name: ${data['name'] ?? 'No name'}',
                               style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              'Location: ${data['location'] ?? 'No data'}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 10),
                             Text(
                               'Education: ${data['education'] ?? 'No data'}',
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Skills: ${data['skills'] ?? 'No data'}',
+                              'Skills: ${data['skill'] ?? 'No data'}',
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'Languages: ${data['languages'] ?? 'No data'}',
+                              'Location: ${data['location'] ?? 'No data'}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Application Status: ${data['status'] ?? 'No status'}',
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 12),
@@ -158,7 +167,7 @@ class SeekerDetailPage extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           final email = data['email'] ?? '';
-                          _apply(email);
+                          _invite(email);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -167,7 +176,7 @@ class SeekerDetailPage extends StatelessWidget {
                               const Size(double.infinity, 50), // Full width
                         ),
                         child: Text(
-                          'Invite',
+                          'Apply',
                           style: btnTextStyle,
                         ),
                       ),

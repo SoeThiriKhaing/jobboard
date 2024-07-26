@@ -16,6 +16,7 @@ class AppliedJobsPage extends StatelessWidget {
     if (user == null) {
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(
             "Applied Jobs",
             style: appBarTextStyle,
