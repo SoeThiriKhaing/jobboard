@@ -42,7 +42,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
 
   PlatformFile? _resumeFile;
   PlatformFile? _coverLetterFile;
-  XFile? _profileImage;
   String? _profileImageUrl;
   String? _coverLetter;
   String? _resumeUrl;
@@ -134,7 +133,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
 
     if (image != null) {
       setState(() {
-        _profileImage = image;
       });
     }
   }

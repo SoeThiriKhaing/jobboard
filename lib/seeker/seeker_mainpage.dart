@@ -54,7 +54,7 @@ class SeekerMainpageState extends State<SeekerMainpage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            label: 'My Activity',
+            label: 'Saved Jobs',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
