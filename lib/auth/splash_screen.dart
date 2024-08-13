@@ -1,4 +1,4 @@
-import 'package:codehunt/auth/login.dart';
+import 'package:codehunt/admin/admin.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/auth/sharepreference.dart';
 import 'package:codehunt/employer/emp_mainpage.dart';
@@ -14,6 +14,9 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   String? userRole;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -38,7 +41,7 @@ class SplashScreenState extends State<SplashScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
               builder: (context) => const EmployerPage(
-                    employerEmail: 'employer',
+                    employerEmail: 'employer', jobPostId: '',
                   )),
         );
       } else if (userRole == "Jobseeker") {
@@ -46,13 +49,22 @@ class SplashScreenState extends State<SplashScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
               builder: (context) => const SeekerMainpage(
-                    seekerEmail: 'Jobseekr',
+                    seekerEmail: 'Jobseeker',
                   )),
         );
       }
-    } else if (userRole == null) {
+    } else if (_emailController.text.trim() == "soethirikhaing846@gmail.com" &&
+        _passwordController.text.trim() == "@#1admin") {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginForm()),
+          MaterialPageRoute(builder: (context) => const AdminPage()));
+    } else if (userRole == null &&
+        _emailController.text.trim() != "soethirikhaing846@gmail.com" &&
+        _passwordController.text.trim() != "@#1admin") {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => const SeekerMainpage(
+                  seekerEmail: '',
+                )),
       );
     }
   }

@@ -20,30 +20,6 @@ class EmpAlertState extends State<EmpAlert>
   late Future<List<DocumentSnapshot>> _allSeekersFuture;
   late Future<List<DocumentSnapshot>> _acceptedSeekersFuture;
   late Future<List<DocumentSnapshot>> _rejectedSeekersFuture;
-  String? _selectedJobTitle;
-
-  final List<String> jobTitles = [
-    'Software Engineer',
-    'Web Developer',
-    'Systems Analyst',
-    'Network Administrator',
-    'Database Administrator',
-    'IT Support Specialist',
-    'Cybersecurity Analyst',
-    'DevOps Engineer',
-    'Front-End Developer',
-    'Back-End Developer',
-    'Full Stack Developer',
-    'Cloud Engineer',
-    'IT Project Manager',
-    'Technical Support Engineer',
-    'Data Scientist',
-    'Machine Learning Engineer',
-    'Business Intelligence Analyst',
-    'Systems Engineer',
-    'QA Engineer (Quality Assurance)',
-    'UX/UI Designer'
-  ];
 
   @override
   void initState() {
@@ -136,8 +112,6 @@ class EmpAlertState extends State<EmpAlert>
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -168,45 +142,6 @@ class EmpAlertState extends State<EmpAlert>
           _buildSeekersList(_acceptedSeekersFuture),
           _buildSeekersList(_rejectedSeekersFuture),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: RegistrationForm.navyColor,
-        child: const Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Filter Seekers by Job Title'),
-                content: DropdownButton<String>(
-                  isExpanded: true,
-                  value: _selectedJobTitle,
-                  hint: const Text('Select Job Title'),
-                  items: jobTitles.map((title) {
-                    return DropdownMenuItem<String>(
-                      value: title,
-                      child: Text(title),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedJobTitle = value;
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
       ),
     );
   }

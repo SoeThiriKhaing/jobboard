@@ -29,20 +29,20 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text('Notifications'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text('Language'),
-            onTap: () {},
-          ),
-          const ListTile(
-            leading: Icon(Icons.delete),
-            title: Text("Delet account"),
-          )
+          // ListTile(
+          //   leading: const Icon(Icons.notifications),
+          //   title: const Text('Notifications'),
+          //   onTap: () {},
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.language),
+          //   title: const Text('Language'),
+          //   onTap: () {},
+          // ),
+          // const ListTile(
+          //   leading: Icon(Icons.delete),
+          //   title: Text("Delet account"),
+          // )
         ],
       ),
     );

@@ -13,18 +13,18 @@ class SeekerSetting extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text('Notifications'),
-            onTap: () {
-              // Navigate to notifications settings
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text('Language'),
-            onTap: () {},
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.notifications),
+          //   title: const Text('Notifications'),
+          //   onTap: () {
+          //     // Navigate to notifications settings
+          //   },
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.language),
+          //   title: const Text('Language'),
+          //   onTap: () {},
+          // ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Sign Out'),

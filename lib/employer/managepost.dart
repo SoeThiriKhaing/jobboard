@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ManagePostsPage extends StatefulWidget {
   final String employerEmail;
 
-  const ManagePostsPage({super.key, required this.employerEmail});
+  const ManagePostsPage({super.key, required this.employerEmail, required String jobPostId});
 
   @override
   State<ManagePostsPage> createState() => _ManagePostsPageState();

@@ -4,6 +4,7 @@ import 'package:codehunt/form_decoration/textstyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditJobPostPage extends StatefulWidget {
@@ -11,8 +12,12 @@ class EditJobPostPage extends StatefulWidget {
   final String employerEmail;
   final Map<String, dynamic> jobPostData;
 
-  const EditJobPostPage(
-      {super.key, required this.jobPostId, required this.jobPostData,required this.employerEmail});
+  const EditJobPostPage({
+    super.key,
+    required this.jobPostId,
+    required this.jobPostData,
+    required this.employerEmail,
+  });
 
   @override
   EditJobPostPageState createState() => EditJobPostPageState();
@@ -31,6 +36,7 @@ class EditJobPostPageState extends State<EditJobPostPage> {
   late TextEditingController _endingDateController;
   String? _salaryType;
   File? _companyLogo;
+  String? _companyLogoUrl;
 
   @override
   void initState() {
@@ -55,12 +61,13 @@ class EditJobPostPageState extends State<EditJobPostPage> {
     _endingDateController =
         TextEditingController(text: widget.jobPostData['endingDate']);
     _salaryType = widget.jobPostData['salaryType'];
+    _companyLogoUrl = widget.jobPostData['companyLogo'];
   }
 
   Future<void> _updateJobPost() async {
     if (_formKey.currentState!.validate()) {
       try {
-        String? logoUrl = widget.jobPostData['companyLogo'];
+        String? logoUrl = _companyLogoUrl;
         if (_companyLogo != null) {
           final storageRef = FirebaseStorage.instance
               .ref()
@@ -93,6 +100,16 @@ class EditJobPostPageState extends State<EditJobPostPage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _companyLogo = File(pickedFile.path);
+      });
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -100,7 +117,7 @@ class EditJobPostPageState extends State<EditJobPostPage> {
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: RegistrationForm.navyColor,
         title: Text(
           "Edit Job Post",
@@ -113,6 +130,18 @@ class EditJobPostPageState extends State<EditJobPostPage> {
           key: _formKey,
           child: Column(
             children: [
+              if (_companyLogoUrl != null || _companyLogo != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: _companyLogo != null
+                      ? Image.file(_companyLogo!, height: 100)
+                      : Image.network(_companyLogoUrl!, height: 100),
+                ),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Change Company Logo'),
+              ),
+              const SizedBox(height: 12.0),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: "Job Title"),
@@ -261,18 +290,14 @@ class EditJobPostPageState extends State<EditJobPostPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24.0),
+              const SizedBox(height: 12.0),
               Container(
                 width: screenWidth,
                 child: ElevatedButton(
                   onPressed: _updateJobPost,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: RegistrationForm.navyColor,
-                  ),
-                  child: Text(
-                    'Update Job Post',
-                    style: btnTextStyle,
-                  ),
+                      backgroundColor: RegistrationForm.navyColor),
+                  child: Text('Update Job Post', style: btnTextStyle),
                 ),
               ),
             ],

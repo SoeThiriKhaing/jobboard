@@ -1,19 +1,16 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/form_decoration/textstyle.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 
 class JobApplicationForm extends StatefulWidget {
   final String jobPostId;
   final String seekerEmail;
   final String jobPostTitle;
-
   final Map<String, dynamic> jobPostData;
 
   const JobApplicationForm({
@@ -21,8 +18,8 @@ class JobApplicationForm extends StatefulWidget {
     required this.jobPostId,
     required this.jobPostData,
     required this.seekerEmail,
-    required String employerEmail,
     required this.jobPostTitle,
+    required String employerEmail,
   });
 
   @override
@@ -38,7 +35,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
   final TextEditingController _skillController = TextEditingController();
   final TextEditingController _languagesController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _jobtitleController = TextEditingController();
 
   PlatformFile? _resumeFile;
   PlatformFile? _coverLetterFile;
@@ -76,7 +72,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           _skillController.text = data['skills'] ?? '';
           _languagesController.text = data['languages'] ?? '';
           _descriptionController.text = data['description'] ?? '';
-          _jobtitleController.text = data['title'] ?? '';
         });
       }
     } catch (e) {
@@ -127,46 +122,44 @@ class JobApplicationFormState extends State<JobApplicationForm> {
     }
   }
 
-  Future<void> _pickProfileImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  Future<String?> _uploadFile(PlatformFile? file, String folder) async {
+    if (file == null) return null;
 
-    if (image != null) {
-      setState(() {
-      });
-    }
-  }
+    final filePath = file.path;
+    if (filePath == null) return null;
 
-  Future<void> _uploadFile(
-      String filePath, String fileName, String field) async {
-    final file = File(filePath);
+    final fileName = file.name;
     final storageRef = FirebaseStorage.instance
         .ref()
-        .child('$field/${widget.seekerEmail}/$fileName');
-    final uploadTask = storageRef.putFile(file);
+        .child('$folder/${widget.seekerEmail}/$fileName');
+    final uploadTask = storageRef.putFile(File(filePath));
 
-    final snapshot = await uploadTask;
+    final snapshot = await uploadTask.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
-
-    setState(() {
-      if (field == 'resumes') {
-        _resumeUrl = downloadUrl;
-      } else if (field == 'profile_images') {
-        _profileImageUrl = downloadUrl;
-      } else if (field == 'coverletter') {
-        _coverLetter = downloadUrl;
-      }
-    });
+    return downloadUrl;
   }
 
   Future<void> _submitApplication(String jobPostId) async {
-    if (_formKey.currentState!.validate() &&
-        _resumeFile != null &&
-        _coverLetterFile != null &&
-        !_alreadyApplied) {
+    if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        if (_resumeFile != null) {
+          _resumeUrl = await _uploadFile(_resumeFile, 'resumes');
+        }
+        if (_coverLetterFile != null) {
+          _coverLetter = await _uploadFile(_coverLetterFile, 'coverletters');
+        }
+
+        if (_resumeUrl == null || _coverLetter == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please upload both cover letter and resume.'),
+            ),
+          );
+          return;
+        }
+
         final jobPostDoc = await FirebaseFirestore.instance
             .collection('job_posts')
             .doc(jobPostId)
@@ -179,11 +172,8 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           return;
         }
 
-        final jobPostTitle = jobPostDoc.data()?['title'] ?? 'Unknown Title';
-
         final applicationData = {
           'jobPostId': jobPostId,
-          'jobPostTitle': jobPostTitle,
           'applicantId': user.uid,
           'name': _nameController.text,
           'email': _emailController.text,
@@ -211,32 +201,19 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           return;
         }
 
-        final subject = 'Job Application for $jobPostTitle'; // Use jobPostTitle
         final body = '''
-      Name: ${_nameController.text}
-      Email: ${_emailController.text}
-      JobTitle:${_jobtitleController.text}
-      Location: ${_locationController.text}
-      Education: ${_educationController.text}
-      Skills: ${_skillController.text}
-      Languages: ${_languagesController.text}
-      Description: ${_descriptionController.text}
-      Cover Letter: ${_coverLetter}
-      Resume: ${_resumeUrl}
-      Profile Image: ${_profileImageUrl}
-      Application Date: ${DateTime.now()}
-      ''';
-
-        // Use url_launcher to open email client with prefilled email
-        final uri = Uri(
-          scheme: 'mailto',
-          path: employerEmail,
-          queryParameters: {
-            'subject': subject,
-            'body': body,
-          },
-        );
-        await launchUrl(uri);
+        Name: ${_nameController.text}
+        Email: ${_emailController.text}
+        Location: ${_locationController.text}
+        Education: ${_educationController.text}
+        Skills: ${_skillController.text}
+        Languages: ${_languagesController.text}
+        Description: ${_descriptionController.text}
+        Cover Letter: ${_coverLetter}
+        Resume: ${_resumeUrl}
+        Profile Image: ${_profileImageUrl}
+        Application Date: ${DateTime.now()}
+        ''';
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Application submitted successfully!')),
@@ -248,11 +225,6 @@ class JobApplicationFormState extends State<JobApplicationForm> {
           const SnackBar(content: Text('You need to be signed in to apply.')),
         );
       }
-    } else if (_resumeFile == null || _coverLetterFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please upload both cover letter and resume.')),
-      );
     }
   }
 
@@ -264,141 +236,131 @@ class JobApplicationFormState extends State<JobApplicationForm> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Apply for ${widget.jobPostData['title']}',
-          style: appBarTextStyle,
+          style: const TextStyle(color: Colors.white, fontSize: 20),
         ),
-        backgroundColor: RegistrationForm.navyColor,
+        backgroundColor: RegistrationForm.navyColor, // Replace with your color
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(3.0),
-        child: Card(
-          color: Colors.white,
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: GestureDetector(
-                      onTap: _pickProfileImage,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: _profileImageUrl != null
-                            ? NetworkImage(_profileImageUrl!)
-                            : const AssetImage(
-                                    'assets/default_profile_image.png')
-                                as ImageProvider,
-                        child: _profileImageUrl == null
-                            ? const Icon(Icons.add_a_photo)
-                            : null,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_nameController, 'Full Name'),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_emailController, 'Email',
-                      readOnly: true),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_locationController, 'Location'),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_educationController, 'Education'),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_skillController, 'Skills'),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_languagesController, 'Languages'),
-                  const SizedBox(height: 20),
-                  _buildTextFormField(_descriptionController, 'Description'),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: screenWidth,
-                    child: ElevatedButton.icon(
-                      onPressed: _pickCoverLetter,
-                      icon: const Icon(Icons.upload_file),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
-                      label: Text(
-                        'Upload Cover Letter',
-                        style: dashTextStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: screenWidth,
-                    child: ElevatedButton.icon(
-                      onPressed: _pickResume,
-                      icon: const Icon(Icons.upload_file),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
-                      label: Text(
-                        'Upload Resume',
-                        style: dashTextStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _alreadyApplied
-                      ? const Text('You have already applied for this job.')
-                      : Container(
-                          width: screenWidth,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _submitApplication(widget.jobPostId);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: RegistrationForm.navyColor,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                            ),
-                            child: Text(
-                              'Submit Application',
-                              style: btnTextStyle,
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Card(
+              color: Colors.white,
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_profileImageUrl != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Center(
+                            child: SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: ClipOval(
+                                child: Image.network(
+                                  _profileImageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                ],
+                      _buildCardTextField(_nameController, 'Full Name'),
+                      _buildCardTextField(_emailController, 'Email'),
+                      _buildCardTextField(_locationController, 'Location'),
+                      _buildCardTextField(_educationController, 'Education'),
+                      _buildCardTextField(_skillController, 'Skills'),
+                      _buildCardTextField(_languagesController, 'Languages'),
+                      _buildCardTextField(
+                        _descriptionController,
+                        'Description',
+                        maxLines: 4,
+                      ),
+                      SizedBox(height: 16.0),
+                      Container(
+                        width: screenWidth,
+                        child: ElevatedButton(
+                          onPressed: _pickResume,
+                          child: const Text('Pick Resume'),
+                        ),
+                      ),
+                      if (_resumeFile != null) Text(_resumeFile!.name),
+                      Container(
+                        width: screenWidth,
+                        child: ElevatedButton(
+                          onPressed: _pickCoverLetter,
+                          child: const Text('Pick Cover Letter'),
+                        ),
+                      ),
+                      if (_coverLetterFile != null)
+                        Text(_coverLetterFile!.name),
+                      SizedBox(height: 16.0),
+                      _alreadyApplied
+                          ? const Text(
+                              'You have already applied for this job.',
+                              style: TextStyle(color: Colors.red),
+                            )
+                          : Container(
+                              width: screenWidth,
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    _submitApplication(widget.jobPostId),
+                                child: Text(
+                                  'Submit Application',
+                                  style: btnTextStyle,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        RegistrationForm.navyColor),
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTextFormField(
-    TextEditingController controller,
-    String label, {
-    bool readOnly = false,
-  }) {
-    return Card(
-      margin: EdgeInsets.zero,
-      color: Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: TextFormField(
-          controller: controller,
-          readOnly: readOnly,
-          decoration: InputDecoration(
-            labelText: label,
-            border: InputBorder.none,
+  Widget _buildCardTextField(TextEditingController controller, String labelText,
+      {int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Card(
+        color: Colors.white,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              labelText: labelText,
+              contentPadding: const EdgeInsets.all(16.0),
+            ),
+            maxLines: maxLines,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your $labelText';
+              }
+              return null;
+            },
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your $label';
-            }
-            return null;
-          },
         ),
       ),
     );

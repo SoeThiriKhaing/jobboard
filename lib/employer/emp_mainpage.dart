@@ -7,8 +7,9 @@ import 'package:codehunt/employer/emp_profile.dart';
 
 class EmployerPage extends StatefulWidget {
   final String employerEmail;
+  final String jobPostId;
 
-  const EmployerPage({super.key, required this.employerEmail});
+  const EmployerPage({super.key, required this.employerEmail, required this.jobPostId});
 
   @override
   EmployerPageState createState() => EmployerPageState();
@@ -23,7 +24,10 @@ class EmployerPageState extends State<EmployerPage> {
     super.initState();
     _pages = <Widget>[
       EmployerHomePage(employerEmail: widget.employerEmail),
-      JobPostForm(employerEmail: widget.employerEmail),
+      JobPostForm(
+        employerEmail: widget.employerEmail,
+        jobPostId: '',
+      ),
       EmpAlert(employerEmail: widget.employerEmail),
       EmployerProfile(employerEmail: widget.employerEmail),
     ];

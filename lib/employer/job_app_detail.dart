@@ -32,10 +32,30 @@ class JobAppDetail extends StatelessWidget {
         throw 'Could not launch $emailUri';
       }
     } catch (e) {
-      print('Email URI: $emailUri');
-      print('Scheme: ${emailUri.scheme}');
-      print('Path: ${emailUri.path}');
-      print('Query: ${emailUri.query}');
+      print('Error opening email: $e');
+    }
+  }
+
+  Future<void> _openUrl(String? url) async {
+    if (url == null || url.isEmpty) {
+      print('No URL provided');
+      return;
+    }
+
+    final Uri? uri = Uri.tryParse(url);
+    if (uri == null || !uri.isAbsolute) {
+      print('Invalid URL: $url');
+      return;
+    }
+
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not launch $url';
+      }
+    } catch (e) {
+      print('Error opening URL: $e');
     }
   }
 
@@ -113,6 +133,11 @@ class JobAppDetail extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             Text(
+                              'Language: ${data['language'] ?? 'No status'}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
                               'Location: ${data['location'] ?? 'No data'}',
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -120,6 +145,42 @@ class JobAppDetail extends StatelessWidget {
                             Text(
                               'Application Status: ${data['status'] ?? 'No status'}',
                               style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Cover Letter:',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            TextButton(
+                              onPressed: () => _openUrl(data['coverLetter']),
+                              child: Text(
+                                data['coverLetter'] != null &&
+                                        Uri.tryParse(data['coverLetter'])
+                                                ?.isAbsolute ==
+                                            true
+                                    ? 'View Cover Letter'
+                                    : 'No data',
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Resume:',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            TextButton(
+                              onPressed: () => _openUrl(data['resumeUrl']),
+                              child: Text(
+                                data['resumeUrl'] != null &&
+                                        Uri.tryParse(data['resumeUrl'])
+                                                ?.isAbsolute ==
+                                            true
+                                    ? 'View Resume'
+                                    : 'No data',
+                                style: const TextStyle(color: Colors.blue),
+                              ),
                             ),
                             const SizedBox(height: 12),
                             const Divider(
@@ -157,7 +218,7 @@ class JobAppDetail extends StatelessWidget {
                           minimumSize:
                               const Size(double.infinity, 50), // Full width
                         ),
-                        child: Text(
+                        child: const Text(
                           'Cancel',
                         ),
                       ),
@@ -176,7 +237,7 @@ class JobAppDetail extends StatelessWidget {
                               const Size(double.infinity, 50), // Full width
                         ),
                         child: Text(
-                          'Apply',
+                          'Invite',
                           style: btnTextStyle,
                         ),
                       ),

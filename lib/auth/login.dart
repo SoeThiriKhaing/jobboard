@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:codehunt/admin/admin.dart'; // Ensure this import is correct
 import 'package:codehunt/auth/register.dart';
 import 'package:codehunt/auth/sharepreference.dart';
 import 'package:codehunt/employer/emp_mainpage.dart';
@@ -26,10 +27,21 @@ class LoginFormState extends State<LoginForm> {
       try {
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
 
+        // Check for hardcoded credentials for AdminPage
+        if (_emailController.text.trim() == "soethirikhaing846@gmail.com" &&
+            _passwordController.text.trim() == "@#1admin") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminPage()),
+          );
+          return; // Exit after navigating to AdminPage
+        }
+
+        // Fetch user role from Firestore
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
@@ -43,21 +55,19 @@ class LoginFormState extends State<LoginForm> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    const SeekerMainpage(seekerEmail: 'Jobseeker')),
+                    SeekerMainpage(seekerEmail: _emailController.text.trim())),
           );
         } else if (role == 'Employer') {
-          
-
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => const EmployerPage(
-                      employerEmail: "employer",
+                builder: (context) => EmployerPage(
+                      employerEmail: _emailController.text.trim(),
+                      jobPostId: '',
                     )),
           );
         } else {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const LoginForm()));
+          _showErrorDialog('Invalid role.');
         }
         _clear();
       } on FirebaseAuthException catch (e) {
@@ -81,7 +91,10 @@ class LoginFormState extends State<LoginForm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Forgot Password'),
+          title: const Text(
+            'Forgot Password',
+            style: TextStyle(color: RegistrationForm.navyColor),
+          ),
           content: TextField(
             controller: _resetEmailController,
             decoration: const InputDecoration(
@@ -102,7 +115,7 @@ class LoginFormState extends State<LoginForm> {
                 if (_resetEmailController.text.isNotEmpty) {
                   try {
                     await FirebaseAuth.instance.sendPasswordResetEmail(
-                      email: _resetEmailController.text,
+                      email: _resetEmailController.text.trim(),
                     );
                     Navigator.of(context).pop();
                     _showInfoDialog('Password reset email sent.');
@@ -215,9 +228,7 @@ class LoginFormState extends State<LoginForm> {
                   decoration: emailInputDecoration(),
                   validator: validateEmail,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -238,9 +249,7 @@ class LoginFormState extends State<LoginForm> {
                   obscureText: true,
                   validator: validatePassword,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   width: _screenWidth,
                   child: ElevatedButton(

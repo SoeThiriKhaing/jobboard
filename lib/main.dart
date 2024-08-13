@@ -1,3 +1,6 @@
+import 'package:codehunt/admin/admin.dart';
+import 'package:codehunt/admin/manage_post.dart';
+import 'package:codehunt/admin/manage_user.dart';
 import 'package:codehunt/auth/splash_screen.dart';
 import 'package:codehunt/employer/emp_home.dart';
 import 'package:codehunt/seeker/seeker_home.dart';
@@ -22,6 +25,9 @@ class MyApp extends StatelessWidget {
       ),
       home: const SplashScreen(),
       routes: {
+        '/admin': (context) => AdminPage(),
+        '/manageUsers': (context) => ManageUsersPage(),
+        '/manageJobPosts': (context) => ManageJobPostsPage(),
         '/seekerhome': (context) => const SeekerHome(
               seekerEmail: 'JobSeeker',
             ),

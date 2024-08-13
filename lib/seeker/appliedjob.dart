@@ -10,6 +10,7 @@ class AppliedJobsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -26,6 +27,7 @@ class AppliedJobsPage extends StatelessWidget {
             ),
             const SizedBox(height: 30.0),
             Container(
+              width: screenWidth,
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
                 onPressed: () {
@@ -106,8 +108,8 @@ class AppliedJobsPage extends StatelessWidget {
                             ClipOval(
                               child: Image.network(
                                 doc['companyLogo'],
-                                width: 80,
-                                height: 80,
+                                width: 60,
+                                height: 60,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -126,6 +128,7 @@ class AppliedJobsPage extends StatelessWidget {
                             children: [
                               const Icon(
                                 Icons.attach_money,
+                                color: Colors.grey,
                               ),
                               const SizedBox(
                                 width: 8,
@@ -136,20 +139,26 @@ class AppliedJobsPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.calendar_today),
+                              const Icon(
+                                Icons.calendar_today,
+                                color: Colors.grey,
+                              ),
                               Text(
                                 ' ${doc['postingDate']}',
                                 style: postTextStyle,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.location_on),
+                              const Icon(
+                                Icons.location_on,
+                                color: Colors.grey,
+                              ),
                               Text(
                                 '${doc['location']}',
                                 style: postTextStyle,

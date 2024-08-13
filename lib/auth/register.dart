@@ -56,7 +56,7 @@ class RegistrationFormState extends State<RegistrationForm> {
             context,
             MaterialPageRoute(
                 builder: (context) => const EmployerPage(
-                      employerEmail: 'employer',
+                      employerEmail: 'employer', jobPostId: '',
                     )),
           );
         }

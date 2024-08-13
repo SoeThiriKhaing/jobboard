@@ -63,6 +63,8 @@ class AboutCompanyState extends State<AboutCompany> {
           .collection('users')
           .where('email', isEqualTo: user?.email)
           .where('role', isEqualTo: 'Employer')
+          .where('jobPostId', isEqualTo: 'jobPostId')
+          .where('email', isEqualTo: widget.employerEmail)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
