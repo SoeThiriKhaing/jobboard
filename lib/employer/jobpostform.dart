@@ -35,7 +35,7 @@ class JobPostFormState extends State<JobPostForm>
   final TextEditingController _skillsController = TextEditingController();
   final TextEditingController _jobTypeController = TextEditingController();
   final TextEditingController _postingDateController = TextEditingController();
-  final TextEditingController _endingDateController = TextEditingController();
+  // final TextEditingController _endingDateController = TextEditingController();
   String? _salaryType;
   String? _jobType;
   String? _jobTitle;
@@ -107,7 +107,7 @@ class JobPostFormState extends State<JobPostForm>
           'requiredSkills': _skillsController.text,
           'jobType': _jobType,
           'postingDate': _postingDateController.text,
-          'endingDate': _endingDateController.text,
+          // 'endingDate': _endingDateController.text,
           'companyLogo': logoUrl,
           'postedBy': widget.employerEmail,
         });
@@ -134,7 +134,7 @@ class JobPostFormState extends State<JobPostForm>
     _skillsController.clear();
     _jobTypeController.clear();
     _postingDateController.clear();
-    _endingDateController.clear();
+    // _endingDateController.clear();
     setState(() {
       _salaryType = null;
       _jobType = null;
@@ -437,21 +437,21 @@ class JobPostFormState extends State<JobPostForm>
                             : null,
                       ),
                       const SizedBox(height: 16.0),
-                      TextFormField(
-                        controller: _endingDateController,
-                        decoration: _inputDecoration.copyWith(
-                          labelText: 'Ending Date',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, _endingDateController),
-                          ),
-                        ),
-                        readOnly: true,
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Please select an ending date'
-                            : null,
-                      ),
+                      // TextFormField(
+                      //   controller: _endingDateController,
+                      //   decoration: _inputDecoration.copyWith(
+                      //     labelText: 'Ending Date',
+                      //     suffixIcon: IconButton(
+                      //       icon: Icon(Icons.calendar_today),
+                      //       onPressed: () =>
+                      //           _selectDate(context, _endingDateController),
+                      //     ),
+                      //   ),
+                      //   readOnly: true,
+                      //   validator: (value) => value == null || value.isEmpty
+                      //       ? 'Please select an ending date'
+                      //       : null,
+                      // ),
                       const SizedBox(height: 16.0),
                       Container(
                         width: screenWidth,

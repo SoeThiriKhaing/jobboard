@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart'; 
+import 'package:logger/logger.dart';
 
 class EmployerProfile extends StatefulWidget {
   const EmployerProfile({super.key, required this.employerEmail});
@@ -33,8 +33,8 @@ class EmployerProfileState extends State<EmployerProfile> {
   String _websiteUrl = '';
   String _location = '';
   String _description = '';
-  String _industry = '';
-  String _size = '';
+  // String _industry = '';
+  // String _size = '';
   String _foundingDate = '';
 
   bool _hasUnsavedChanges = false;
@@ -45,8 +45,8 @@ class EmployerProfileState extends State<EmployerProfile> {
   final TextEditingController _websiteUrlController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _industryController = TextEditingController();
-  final TextEditingController _sizeController = TextEditingController();
+  // final TextEditingController _industryController = TextEditingController();
+  // final TextEditingController _sizeController = TextEditingController();
   final TextEditingController _foundingDateController = TextEditingController();
 
   var logger = Logger();
@@ -81,8 +81,8 @@ class EmployerProfileState extends State<EmployerProfile> {
           _websiteUrl = data['websiteUrl'] ?? '';
           _location = data['location'] ?? '';
           _description = data['description'] ?? '';
-          _industry = data['industry'] ?? '';
-          _size = data['size'] ?? '';
+          // _industry = data['industry'] ?? '';
+          // _size = data['size'] ?? '';
           _foundingDate = data['foundingDate'] ?? '';
 
           _companyNameController.text = _companyName;
@@ -90,8 +90,8 @@ class EmployerProfileState extends State<EmployerProfile> {
           _websiteUrlController.text = _websiteUrl;
           _locationController.text = _location;
           _descriptionController.text = _description;
-          _industryController.text = _industry;
-          _sizeController.text = _size;
+          // _industryController.text = _industry;
+          // _sizeController.text = _size;
           _foundingDateController.text = _foundingDate;
         });
       }
@@ -111,8 +111,8 @@ class EmployerProfileState extends State<EmployerProfile> {
       'websiteUrl': _websiteUrl,
       'location': _location,
       'description': _description,
-      'industry': _industry,
-      'size': _size,
+      // 'industry': _industry,
+      // 'size': _size,
       'foundingDate': _foundingDate,
     });
   }
@@ -197,8 +197,8 @@ class EmployerProfileState extends State<EmployerProfile> {
     _websiteUrlController.dispose();
     _locationController.dispose();
     _descriptionController.dispose();
-    _industryController.dispose();
-    _sizeController.dispose();
+    // _industryController.dispose();
+    // _sizeController.dispose();
     _foundingDateController.dispose();
     super.dispose();
   }
@@ -423,34 +423,34 @@ class EmployerProfileState extends State<EmployerProfile> {
                           },
                         ),
                         const SizedBox(height: 16.0),
-                        TextFormField(
-                          controller: _industryController,
-                          decoration: const InputDecoration(
-                            labelText: 'Industry',
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _industry = value;
-                              _hasUnsavedChanges = true;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          controller: _sizeController,
-                          decoration: const InputDecoration(
-                            labelText: 'Company Size',
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _size = value;
-                              _hasUnsavedChanges = true;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
+                        // TextFormField(
+                        //   controller: _industryController,
+                        //   decoration: const InputDecoration(
+                        //     labelText: 'Industry',
+                        //     border: OutlineInputBorder(),
+                        //   ),
+                        //   onChanged: (value) {
+                        //     setState(() {
+                        //       _industry = value;
+                        //       _hasUnsavedChanges = true;
+                        //     });
+                        //   },
+                        // ),
+                        // const SizedBox(height: 16.0),
+                        // TextFormField(
+                        //   controller: _sizeController,
+                        //   decoration: const InputDecoration(
+                        //     labelText: 'Company Size',
+                        //     border: OutlineInputBorder(),
+                        //   ),
+                        //   onChanged: (value) {
+                        //     setState(() {
+                        //       _size = value;
+                        //       _hasUnsavedChanges = true;
+                        //     });
+                        //   },
+                        // ),
+                        // const SizedBox(height: 16.0),
                         GestureDetector(
                           onTap: () => _selectFoundingDate(context),
                           child: AbsorbPointer(

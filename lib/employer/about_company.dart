@@ -229,70 +229,70 @@ class AboutCompanyState extends State<AboutCompany> {
                           const SizedBox(height: 20),
                           Divider(thickness: 2.0, color: Colors.grey[300]),
                           const SizedBox(height: 16),
-                          Text(
-                            'About Company',
-                            style: titleTextStyle.copyWith(
-                                fontSize: 18, color: Colors.purple),
-                          ),
-                          const SizedBox(height: 20),
-                          if (_profileImageUrl != null)
-                            ClipOval(
-                              child: Image.network(
-                                _profileImageUrl!,
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          const SizedBox(height: 16),
-                          if (_companyName != null)
-                            Text(
-                              _companyName!,
-                              style: titleTextStyle.copyWith(fontSize: 20),
-                            ),
-                          const SizedBox(height: 10),
-                          if (_email != null)
-                            Text(
-                              'Email: $_email',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 8),
-                          if (_websiteUrl != null)
-                            Text(
-                              'Website: $_websiteUrl',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 8),
-                          if (_location.isNotEmpty)
-                            Text(
-                              'Location: $_location',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 20),
-                          if (_description.isNotEmpty)
-                            Text(
-                              'Description: $_description',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 12),
-                          if (industry.isNotEmpty)
-                            Text(
-                              'Industry: $industry',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 12),
-                          if (size.isNotEmpty)
-                            Text(
-                              'Size: $size',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 12),
-                          if (foundingDate.isNotEmpty)
-                            Text(
-                              'Founding Date: $foundingDate',
-                              style: postTextStyle,
-                            ),
-                          const SizedBox(height: 20),
+                          // Text(
+                          //   'About Company',
+                          //   style: titleTextStyle.copyWith(
+                          //       fontSize: 18, color: Colors.purple),
+                          // ),
+                          // const SizedBox(height: 20),
+                          // if (_profileImageUrl != null)
+                          //   ClipOval(
+                          //     child: Image.network(
+                          //       _profileImageUrl!,
+                          //       width: 60,
+                          //       height: 60,
+                          //       fit: BoxFit.cover,
+                          //     ),
+                          //   ),
+                          // const SizedBox(height: 16),
+                          // if (_companyName != null)
+                          //   Text(
+                          //     _companyName!,
+                          //     style: titleTextStyle.copyWith(fontSize: 20),
+                          //   ),
+                          // const SizedBox(height: 10),
+                          // if (_email != null)
+                          //   Text(
+                          //     'Email: $_email',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 8),
+                          // if (_websiteUrl != null)
+                          //   Text(
+                          //     'Website: $_websiteUrl',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 8),
+                          // if (_location.isNotEmpty)
+                          //   Text(
+                          //     'Location: $_location',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 20),
+                          // if (_description.isNotEmpty)
+                          //   Text(
+                          //     'Description: $_description',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 12),
+                          // if (industry.isNotEmpty)
+                          //   Text(
+                          //     'Industry: $industry',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 12),
+                          // if (size.isNotEmpty)
+                          //   Text(
+                          //     'Size: $size',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 12),
+                          // if (foundingDate.isNotEmpty)
+                          //   Text(
+                          //     'Founding Date: $foundingDate',
+                          //     style: postTextStyle,
+                          //   ),
+                          // const SizedBox(height: 20),
                         ],
                       ),
                     ),

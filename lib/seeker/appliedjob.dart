@@ -16,7 +16,7 @@ class AppliedJobsPage extends StatelessWidget {
     if (user == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Applied Jobs'),
+          title: Text('Applied Jobs', style: appBarTextStyle),
           backgroundColor: RegistrationForm.navyColor,
         ),
         body: Column(

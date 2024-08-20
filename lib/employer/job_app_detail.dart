@@ -29,7 +29,7 @@ class JobAppDetail extends StatelessWidget {
       if (await canLaunchUrl(emailUri)) {
         await launchUrl(emailUri, mode: LaunchMode.platformDefault);
       } else {
-        throw 'Could not launch $emailUri';
+        print('Could not launch $emailUri');
       }
     } catch (e) {
       print('Error opening email: $e');
@@ -42,8 +42,9 @@ class JobAppDetail extends StatelessWidget {
       return;
     }
 
-    final Uri? uri = Uri.tryParse(url);
-    if (uri == null || !uri.isAbsolute) {
+    final Uri uri = Uri.parse(url);
+
+    if (!uri.hasScheme || !uri.isAbsolute) {
       print('Invalid URL: $url');
       return;
     }
@@ -52,7 +53,7 @@ class JobAppDetail extends StatelessWidget {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        throw 'Could not launch $url';
+        print('Could not launch $url');
       }
     } catch (e) {
       print('Error opening URL: $e');

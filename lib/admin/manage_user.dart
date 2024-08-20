@@ -67,19 +67,25 @@ class ManageUsersPageState extends State<ManageUsersPage> {
             style: appBarTextStyle,
           ),
           backgroundColor: RegistrationForm.navyColor,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Employers'),
-              Tab(text: 'Job Seekers'),
-            ],
-            labelColor: RegistrationForm.navyColor,
-            unselectedLabelColor: Colors.black54,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50.0),
+            child: Container(
+              color: Colors.white,
+              child: const TabBar(
+                tabs: [
+                  Tab(text: 'Employers'),
+                  Tab(text: 'Job Seekers'),
+                ],
+                labelColor: RegistrationForm.navyColor,
+                unselectedLabelColor: Colors.black54,
+              ),
+            ),
           ),
         ),
         body: const TabBarView(
           children: [
-            UserList(role: 'employer'),
-            UserList(role: 'jobseeker'),
+            UserList(role: 'Employer'),
+            UserList(role: 'Jobseeker'),
           ],
         ),
       ),
@@ -115,45 +121,55 @@ class UserList extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = users[index];
             final userId = user.id;
-            final userName = user['name'] ?? 'No name';
             final userEmail = user['email'] ?? 'No email';
             final userRole = user['role'] ?? 'No role';
 
-            return ListTile(
-              title: Text(userName),
-              subtitle: Text('$userEmail\nRole: $userRole'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () async {
-                  bool? confirm = await showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Confirm Delete'),
-                        content: const Text(
-                            'Are you sure you want to delete this user?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop(false);
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Delete'),
-                            onPressed: () {
-                              Navigator.of(context).pop(true);
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                subtitle: Text(
+                  '$userEmail\nRole: $userRole',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () async {
+                    bool? confirm = await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Delete'),
+                          content: const Text(
+                              'Are you sure you want to delete this user?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
 
-                  if (confirm == true) {
-                    await ManageUsersPageState()._deleteUser(userId);
-                  }
-                },
+                    if (confirm == true) {
+                      await ManageUsersPageState()._deleteUser(userId);
+                    }
+                  },
+                ),
               ),
             );
           },
